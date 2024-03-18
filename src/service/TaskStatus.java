@@ -1,3 +1,5 @@
+package service;
+
 public enum TaskStatus {
     // enum для хранения статусов задач
     NEW,

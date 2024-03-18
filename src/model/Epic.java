@@ -1,3 +1,7 @@
+package model;
+import service.TaskManager;
+import service.TaskStatus;
+
 import java.util.HashMap;
 
 public class Epic extends Task {
@@ -64,7 +68,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return String.format("Epic id= %d | имя: %s\n" +
+        return String.format("model.Epic id= %d | имя: %s\n" +
                 "описание: %s\n" +
                 "статус: %s\n" +
                 "подзадач всего: %d\n" +

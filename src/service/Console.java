@@ -1,81 +1,14 @@
+package service;
+
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import service.TaskManager;
+import service.TaskStatus;
+
 import java.util.Scanner;
 import java.util.HashMap;
 public class Console {
-    static int command;
-    public static void console(TaskManager taskManager) {
-        Scanner sc = new Scanner(System.in);
-
-        while (true) {
-            printMenu();
-            command = Integer.parseInt(sc.nextLine());
-            switch (command) {
-                case 1 : {
-                    printTasks(taskManager.getAllTasks());
-                    break;
-                }
-                case 2 : {
-                    System.out.println("Введите id задачи");
-                    int id = Integer.parseInt(sc.nextLine());
-                    if (taskManager.getAllTasks().containsKey(id)) {
-                        System.out.println(taskManager.getTaskById(id));
-                    } else {
-                        System.out.println("Задачи с таким id нет\n");
-                    }
-                    break;
-                }
-                case 3: {
-                    System.out.println("Введите название задачи");
-                    String name = sc.nextLine();
-                    System.out.println("Введите описание задачи");
-                    String description = sc.nextLine();
-                    taskManager.addTask(new Task(name, description));
-                    System.out.println("Задача добавлена");
-                    break;
-                }
-                case 4: {
-                    System.out.println("Введите название эпика");
-                    String name = sc.nextLine();
-                    System.out.println("Введите описание эпика");
-                    String description = sc.nextLine();
-                    taskManager.addTask(new Epic(name, description));
-                    System.out.println("Эпик добавлен\n");
-                    break;
-                }
-                case 5: {
-                    addSubtask(taskManager, sc);
-                    break;
-                }
-                case 6: {
-                    taskManager.deleteAllTasks();
-                    break;
-                }
-                case 7: {
-                    updateTask(taskManager, sc);
-                    break;
-                }
-                case 8: {
-                    updateStatus(taskManager, sc);
-                    break;
-                }
-                case 9: {
-                    delTask(taskManager, sc);
-                    break;
-                }
-                case 10: {
-                    getSubtasks(taskManager, sc);
-                    break;
-                }
-                case 11: {
-                    System.out.println("Работа завершена");
-                    return;
-                }
-                default: {
-                    System.out.println("Такой команды нет, попробуйте снова\n");
-                    break;
-                }
-            }
-        }
-    }
 
     // Выводим главное меню
     public static void printMenu() {
@@ -89,8 +22,11 @@ public class Console {
         System.out.println("7 - изменить имя и описание задачи");
         System.out.println("8 - изменить статус задачи");
         System.out.println("9 - удалить задачу");
-        System.out.println("10 - посмотреть подзадачи");
-        System.out.println("11 - завершить работу");
+        System.out.println("10 -  удалить все эпики");
+        System.out.println("11 - посмотреть подзадачи");
+        System.out.println("12 - посмотреть все Эпики");
+        System.out.println("13 - посмотреть все Подзадачи");
+        System.out.println("14 - завершить работу");
     }
 
 

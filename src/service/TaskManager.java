@@ -1,4 +1,13 @@
+package service;
+
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import service.TaskStatus;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class TaskManager {
     // Класс для управления задачами
@@ -27,6 +36,15 @@ public class TaskManager {
     // Удаляем все задачи
     public void deleteAllTasks() {
         tasks.clear();
+    }
+
+    // Удаляем все эпики
+    public void delAllEpics() {
+        // Наверное проще было сделать в TaskManager три мапы под каждый класс Task, Epic, Subtask ?
+        for (Integer key: getAllEpics().keySet()) {
+            delAllSubtasks(tasks.get(key)); // удаляем подзадачи
+            tasks.remove(key);
+        }
     }
 
     // Добавляем задачу в менеджер
@@ -78,7 +96,17 @@ public class TaskManager {
         }
     }
 
-    // получаем задачу по id
+    // Получаем все подзадачи
+    public HashMap<Integer, Subtask> getAllSubtasks() {
+        HashMap<Integer, Subtask> allSubtasks = new HashMap<>();
+        HashMap<Integer, Epic> allEpics = getAllEpics();
+        for (Integer key: allEpics.keySet()) {
+            allSubtasks.putAll(allEpics.get(key).getSubtasks());
+        }
+        return allSubtasks;
+    }
+
+    // Получаем задачу по id
     public Task getTaskById(int id) {
         for (Integer key : tasks.keySet()) {
             if (tasks.get(key).getTaskId() == id) {
@@ -86,6 +114,18 @@ public class TaskManager {
             }
         }
         return null;
+    }
+
+    // Получаем все эпики
+    public HashMap<Integer, Epic> getAllEpics() {
+        HashMap<Integer, Epic> allEpics = new HashMap<>();
+        for (Integer key: tasks.keySet()) {
+            if (tasks.get(key).getClass() == Epic.class) {
+                Epic epic = (Epic) tasks.get(key);
+                allEpics.put(epic.getTaskId(), epic);
+            }
+        }
+        return allEpics;
     }
 
     // получаем подзадачу по id эпика и id подзадачи

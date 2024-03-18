@@ -1,4 +1,9 @@
+package model;
+
+import service.TaskStatus;
+
 import java.util.HashMap;
+import service.TaskManager;
 
 public class Task {
     //  Класс для описания главных задач
@@ -60,7 +65,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return String.format("Task id= %d | имя: %s\n" +
+        return String.format("model.Task id= %d | имя: %s\n" +
                 "описание: %s\n" +
                 "статус: %s\n", getTaskId(), getName(), getDescription(), getTaskStatus());
     }

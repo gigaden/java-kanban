@@ -1,3 +1,8 @@
+package model;
+
+import service.TaskStatus;
+import service.TaskManager;
+
 public class Subtask extends Task {
     // Класс для описания подзадач
 
@@ -28,7 +33,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return String.format("Subtask id= %d | имя: %s\n" +
+        return String.format("model.Subtask id= %d | имя: %s\n" +
                 "описание: %s\n" +
                 "эпик: id= %d  имя %s\n" +
                 "статус: %s\n", getTaskId(), getName(), getDescription(), epic.getTaskId(), epic.getName(), taskStatus);
