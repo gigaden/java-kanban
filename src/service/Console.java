@@ -6,6 +6,7 @@ import model.Task;
 import service.TaskManager;
 import service.TaskStatus;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.HashMap;
 public class Console {
@@ -31,13 +32,12 @@ public class Console {
 
 
     // Выводим задачи на печать
-    public static void printTasks(HashMap<Integer, Task> tasks) {
+    public static void printTasks(ArrayList<Task> tasks) {
         if (tasks.isEmpty()) {
             System.out.println("Не создано ни одной задачи\n");
             return;
         }
-        for (Integer key: tasks.keySet()) {
-            Task task = tasks.get(key);
+        for (Task task: tasks) {
             System.out.println(task);
             System.out.println("____________________________________\n");
         }
@@ -47,7 +47,7 @@ public class Console {
     public static void updateTask(TaskManager taskManager, Scanner sc) {
         System.out.println("Введите id задачи");
         int id = Integer.parseInt(sc.nextLine());
-        if (!taskManager.getAllTasks().containsKey(id)) {
+        if (!taskManager.getAllTasks().contains(taskManager.getTaskById(id))) {
             System.out.println("Задачи с таким id нет\n");
             return;
         }
@@ -64,7 +64,7 @@ public class Console {
     public static void updateStatus(TaskManager taskManager, Scanner sc) {
         System.out.println("Введите id задачи");
         int id = Integer.parseInt(sc.nextLine());
-        if (!taskManager.getAllTasks().containsKey(id)) {
+        if (!taskManager.hasTask(id)) {
             System.out.println("Задачи с таким id нет\n");
             return;
         }
@@ -86,7 +86,7 @@ public class Console {
     public static void delTask(TaskManager taskManager, Scanner sc) {
         System.out.println("Введите id задачи");
         int id = Integer.parseInt(sc.nextLine());
-        if (!taskManager.getAllTasks().containsKey(id)) {
+        if (!taskManager.hasTask(id)) {
             System.out.println("Задачи с таким id нет\n");
             return;
         }
@@ -98,7 +98,7 @@ public class Console {
     public static void getSubtasks(TaskManager taskManager, Scanner sc) {
         System.out.println("Введите id эпика");
         int id = Integer.parseInt(sc.nextLine());
-        if (!taskManager.getAllTasks().containsKey(id)) {
+        if (!taskManager.hasTask(id)) {
             System.out.println("Эпика с таким id нет\n");
             return;
         } else if (taskManager.getAllSubtasksById(id) == null) {
@@ -112,7 +112,7 @@ public class Console {
     public static void addSubtask(TaskManager taskManager, Scanner sc) {
         System.out.println("Введите id эпика");
         int id = Integer.parseInt(sc.nextLine());
-        if (!taskManager.getAllTasks().containsKey(id)) {
+        if (!taskManager.hasTask(id)) {
             System.out.println("Эпика с таким id нет\n");
             return;
         } else if (taskManager.getTaskById(id).getSubtasks() == null) {

@@ -44,7 +44,7 @@ public class Main {
                 case 2 : {
                     System.out.println("Введите id задачи");
                     int id = Integer.parseInt(sc.nextLine());
-                    if (taskManager.getAllTasks().containsKey(id)) {
+                    if (taskManager.hasTask(id)) {
                         System.out.println(taskManager.getTaskById(id));
                     } else {
                         System.out.println("Задачи с таким id нет\n");

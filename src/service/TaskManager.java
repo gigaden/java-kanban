@@ -7,6 +7,7 @@ import service.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 public class TaskManager {
@@ -29,8 +30,15 @@ public class TaskManager {
 
 
     // Получаем список всех задач
-    public HashMap<Integer, Task> getAllTasks() {
-        return tasks;
+    public ArrayList<Task> getAllTasks() {
+        ArrayList<Task> allTasks = new ArrayList<>(List.copyOf(tasks.values()));
+        return allTasks;
+
+    }
+
+    // Проверяем есть ли задача в менеджере
+    public boolean hasTask(int id) {
+        return tasks.containsKey(id);
     }
 
     // Удаляем все задачи
@@ -128,7 +136,7 @@ public class TaskManager {
         return allEpics;
     }
 
-    // получаем подзадачу по id эпика и id подзадачи
+    // Получаем подзадачу по id эпика и id подзадачи
     public Subtask getSubtaskById(int taskId, int subtaskId) {
         if (!tasks.containsKey(taskId)) {
             System.out.println("Задачи с таким id не существует.");
@@ -142,9 +150,19 @@ public class TaskManager {
         return epic.getSubtaskById(subtaskId);
     }
 
-    // получаем все подзадачи эпика по id
-    public HashMap<Integer, Subtask> getAllSubtasksById(int id) {
+    // Получаем все подзадачи эпика по id
+    public ArrayList<Subtask> getAllSubtasksById(int id) {
         // хз какая логика будет на фронте, поэтому пока возвращается null если id выводит не эпик
-        return tasks.get(id).getSubtasks();
+        ArrayList<Subtask> allSubtasks = new ArrayList<>(List.copyOf(tasks.get(id).getSubtasks().values()));
+        return allSubtasks;
     }
+
+    // Меняем статус задачи
+    public void setTaskStatus(int id, TaskStatus taskStatus) {
+        if (!hasTask(id) || tasks.get(id).getClass() == Epic.class) {
+            return;
+        }
+        tasks.get(id).setTaskStatus(taskStatus);
+    }
+
 }
