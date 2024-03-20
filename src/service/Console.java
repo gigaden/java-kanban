@@ -23,7 +23,7 @@ public class Console {
         System.out.println("7 - изменить имя и описание задачи");
         System.out.println("8 - изменить статус задачи");
         System.out.println("9 - удалить задачу");
-        System.out.println("10 -  удалить все эпики");
+        System.out.println("10 - удалить все эпики");
         System.out.println("11 - посмотреть подзадачи");
         System.out.println("12 - посмотреть все Эпики");
         System.out.println("13 - посмотреть все Подзадачи");

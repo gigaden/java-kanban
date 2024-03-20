@@ -17,6 +17,15 @@ public class Epic extends Task {
         TaskManager.setTaskId();
     }
 
+    // Конструктор для глубокого копирования
+    public Epic(Epic another) {
+        this.taskId = another.taskId;
+        this.name = another.name;
+        this.description = another.description;
+        this.taskStatus = another.taskStatus;
+        this.subtasks = another.getCopyOfSubtasks();
+    }
+
 
     // Добавляем подзадачу в эпик
     public void addSubtask(Subtask subtask) {
@@ -65,10 +74,19 @@ public class Epic extends Task {
         setTaskStatus(TaskStatus.NEW);
     }
 
+    // Получаем копию субтасков
+    public HashMap<Integer, Subtask> getCopyOfSubtasks() {
+        HashMap<Integer, Subtask> copy = new HashMap<>();
+        for (int key: subtasks.keySet()) {
+            copy.put(key, new Subtask(subtasks.get(key)));
+        }
+        return copy;
+    }
+
 
     @Override
     public String toString() {
-        return String.format("model.Epic id= %d | имя: %s\n" +
+        return String.format("Epic id= %d | имя: %s\n" +
                 "описание: %s\n" +
                 "статус: %s\n" +
                 "подзадач всего: %d\n" +

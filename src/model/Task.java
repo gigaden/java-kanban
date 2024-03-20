@@ -27,6 +27,15 @@ public class Task {
         subtasks = null;
     }
 
+    // Конструктор для глубокого копирования объекта
+    public Task(Task another) {
+        this.taskId = another.taskId;
+        this.name = another.name;
+        this.description = another.description;
+        this.taskStatus = another.taskStatus;
+        this.subtasks = another.subtasks;
+    }
+
     // Получаем все подзадачи. Для обычной задачи и подзадачи вернётся null, для эпика вернётся хэшмап
     public HashMap<Integer, Subtask> getSubtasks() {
         return subtasks;
@@ -65,7 +74,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return String.format("model.Task id= %d | имя: %s\n" +
+        return String.format("Task id= %d | имя: %s\n" +
                 "описание: %s\n" +
                 "статус: %s\n", getTaskId(), getName(), getDescription(), getTaskStatus());
     }

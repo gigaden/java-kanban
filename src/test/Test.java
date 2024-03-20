@@ -8,6 +8,8 @@ import service.CreateTasks;
 import service.TaskManager;
 import service.TaskStatus;
 
+import java.util.ArrayList;
+
 public class Test {
     public static void main(String[] args) {
         System.out.println("Тест запущен");
@@ -64,6 +66,29 @@ public class Test {
         taskManager.delTaskById(subtask1.getTaskId());
         System.out.println("Выводим все задачи");
         System.out.println(taskManager.getAllTasks());
+        System.out.println("____________________________________");
+        System.out.println();
+
+        System.out.println("Получаем список всех эпиков");
+        System.out.println("счётчик в таскменеджер:" + TaskManager.getTaskId());
+        ArrayList<Epic> allEpics = taskManager.getAllEpics();
+        System.out.println(allEpics);
+        System.out.println("Пробуем поменять имя одного из эпиков в полученных данных");
+        allEpics.get(0).setName("Успешно изменили имя эпика");
+        System.out.println(taskManager.getAllEpics());
+        System.out.println("счётчик в таскменеджер:" + TaskManager.getTaskId());
+        System.out.println("____________________________________");
+        System.out.println();
+
+        Subtask subtask = new Subtask(epic1, "Имя подзадачи прежнее", "Описание");
+        taskManager.addTask(subtask);
+        System.out.println("Получаем список всех подзадач");
+        ArrayList<Subtask> allSubtask = taskManager.getAllSubtasks();
+        System.out.println(allSubtask);
+        System.out.println("Пробуем поменять имя одной из подзадач в полученных данных");
+        allSubtask.get(0).setName("Успешно изменили имя подзадачи");
+        System.out.println(taskManager.getAllSubtasks());
+        System.out.println("счётчик в таскменеджер:" + TaskManager.getTaskId());
 
 
     }

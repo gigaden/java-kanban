@@ -17,6 +17,16 @@ public class Subtask extends Task {
         TaskManager.setTaskId();
     }
 
+    // Конструктор для глубокого копирования
+    public Subtask(Subtask another) {
+        this.taskId = another.taskId;
+        this.name = another.name;
+        this.description = another.description;
+        this.taskStatus = another.taskStatus;
+        this.epic = ((Subtask) another).epic;
+
+    }
+
     public Epic getEpic() {
         return epic;
     }
@@ -33,9 +43,9 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return String.format("model.Subtask id= %d | имя: %s\n" +
+        return String.format("Subtask id= %d | имя: %s\n" +
                 "описание: %s\n" +
-                "эпик: id= %d  имя %s\n" +
+                "эпик: id= %d  имя: %s\n" +
                 "статус: %s\n", getTaskId(), getName(), getDescription(), epic.getTaskId(), epic.getName(), taskStatus);
     }
 
