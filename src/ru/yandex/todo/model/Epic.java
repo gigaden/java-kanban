@@ -1,6 +1,6 @@
-package model;
-import service.TaskManager;
-import service.TaskStatus;
+package ru.yandex.todo.model;
+import ru.yandex.todo.service.InMemoryTaskManager;
+import ru.yandex.todo.service.TaskStatus;
 
 import java.util.HashMap;
 
@@ -13,8 +13,8 @@ public class Epic extends Task {
         this.description = description;
         taskStatus = TaskStatus.NEW;
         subtasks = new HashMap<>();
-        taskId = TaskManager.getTaskId();
-        TaskManager.setTaskId();
+        taskId = InMemoryTaskManager.getTaskId();
+        InMemoryTaskManager.setTaskId();
     }
 
     // Конструктор для глубокого копирования

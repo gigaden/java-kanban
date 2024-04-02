@@ -1,7 +1,7 @@
-package model;
+package ru.yandex.todo.model;
 
-import service.TaskStatus;
-import service.TaskManager;
+import ru.yandex.todo.service.InMemoryTaskManager;
+import ru.yandex.todo.service.TaskStatus;
 
 public class Subtask extends Task {
     // Класс для описания подзадач
@@ -13,8 +13,8 @@ public class Subtask extends Task {
         this.name = name;
         this.description = description;
         taskStatus = TaskStatus.NEW;
-        taskId = TaskManager.getTaskId();
-        TaskManager.setTaskId();
+        taskId = InMemoryTaskManager.getTaskId();
+        InMemoryTaskManager.setTaskId();
     }
 
     // Конструктор для глубокого копирования

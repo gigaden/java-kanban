@@ -1,23 +1,24 @@
-package service;
+package ru.yandex.todo.service;
 
-import model.Epic;
-import model.Subtask;
-import model.Task;
-import service.TaskStatus;
+import ru.yandex.todo.model.Epic;
+import ru.yandex.todo.model.Subtask;
+import ru.yandex.todo.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
-public class TaskManager {
+public class InMemoryTaskManager implements TaskManager {
     // Класс для управления задачами
     private static int id; // Переменная для хранения id задачи
-    private final HashMap<Integer, Task> tasks; // хранилище всех задач
+    private final HashMap<Integer, Task> tasks; // Хранилище всех задач
 
-    public TaskManager() {
+    protected final HistoryManager historyManager;
+
+    public InMemoryTaskManager() {
         id = 1;
         tasks = new HashMap<>();
+        historyManager = Managers.getDefaultHistory();
     }
 
     public static int getTaskId() {
@@ -30,6 +31,7 @@ public class TaskManager {
 
 
     // Получаем список всех задач
+    @Override
     public ArrayList<Task> getAllTasks() {
         ArrayList<Task> allTasks = new ArrayList<>();
         for (Task task : tasks.values()) {
@@ -39,6 +41,7 @@ public class TaskManager {
     }
 
     // Получаем все эпики
+    @Override
     public ArrayList<Epic> getAllEpics() {
         ArrayList<Epic> allEpics = new ArrayList<>();
         for (Task task : tasks.values()) {
@@ -50,6 +53,7 @@ public class TaskManager {
     }
 
     // Получаем все подзадачи
+    @Override
     public ArrayList<Subtask> getAllSubtasks() {
         ArrayList<Subtask> allSubtasks = new ArrayList<>();
         for (Epic epic : getAllEpics()) {
@@ -65,13 +69,15 @@ public class TaskManager {
     }
 
     // Удаляем все задачи
+    @Override
     public void deleteAllTasks() {
         tasks.clear();
     }
 
     // Удаляем все эпики
+    @Override
     public void delAllEpics() {
-        // Наверное проще было сделать в TaskManager три мапы под каждый класс Task, Epic, Subtask ?
+        // Наверное проще было сделать в InMemoryTaskManager три мапы под каждый класс Task, Epic, Subtask ?
         for (Epic epic : getAllEpics()) {
             delAllSubtasks(epic); // удаляем подзадачи
             tasks.remove(epic.getTaskId());
@@ -79,16 +85,19 @@ public class TaskManager {
     }
 
     // Добавляем задачу в менеджер
-    public void addTask(Task task) {
+    @Override
+    public int addTask(Task task) {
         tasks.put(task.getTaskId(), task);
         // Если прилетает подзадача, то добавляем её в мапу эпика
         if (task.getClass() == Subtask.class) {
             Epic epic = ((Subtask) task).getEpic();
             epic.addSubtask((Subtask) task);
         }
+        return task.getTaskId();
     }
 
     // Обновляем задачу
+    @Override
     public void updateTask(int id, String name, String description) {
         Task task = tasks.get(id);
         task.setName(name);
@@ -96,6 +105,7 @@ public class TaskManager {
     }
 
     // Меняем статус задачи
+    @Override
     public void updateTaskStatus(int id, TaskStatus taskStatus) {
         Task task = tasks.get(id);
         if (task.getClass() != Epic.class) {
@@ -104,6 +114,7 @@ public class TaskManager {
     }
 
     // Удаляем задачу по id
+    @Override
     public void delTaskById(int id) {
         /* Т.к. решил хранить подзадачи в мапе здесь и в мапе эпика, то нужно дополнительно удалять
          * подзадачу из мапы эпика */
@@ -121,6 +132,7 @@ public class TaskManager {
     }
 
     // Удаляем все подзадачи эпика
+    @Override
     public void delAllSubtasks(Task task) {
         for (Integer key : task.getSubtasks().keySet()) {
             tasks.remove(key);
@@ -128,9 +140,11 @@ public class TaskManager {
     }
 
     // Получаем задачу по id
+    @Override
     public Task getTaskById(int id) {
         for (Integer key : tasks.keySet()) {
             if (tasks.get(key).getTaskId() == id) {
+                addTaskToHistory(tasks.get(key));
                 return tasks.get(key);
             }
         }
@@ -138,6 +152,7 @@ public class TaskManager {
     }
 
     // Получаем подзадачу по id эпика и id подзадачи
+    @Override
     public Subtask getSubtaskById(int taskId, int subtaskId) {
         if (!tasks.containsKey(taskId)) {
             System.out.println("Задачи с таким id не существует.");
@@ -148,10 +163,12 @@ public class TaskManager {
             return null;
         }
         Epic epic = (Epic) tasks.get(taskId);
+        addTaskToHistory(epic.getSubtaskById(subtaskId));
         return epic.getSubtaskById(subtaskId);
     }
 
     // Получаем все подзадачи эпика по id
+    @Override
     public ArrayList<Subtask> getAllSubtasksById(int id) {
         // хз какая логика будет на фронте, поэтому пока возвращается null если id выводит не эпик
         ArrayList<Subtask> allSubtasks = new ArrayList<>(List.copyOf(tasks.get(id).getSubtasks().values()));
@@ -159,11 +176,23 @@ public class TaskManager {
     }
 
     // Меняем статус задачи
+    @Override
     public void setTaskStatus(int id, TaskStatus taskStatus) {
         if (!hasTask(id) || tasks.get(id).getClass() == Epic.class) {
             return;
         }
         tasks.get(id).setTaskStatus(taskStatus);
+    }
+
+    // Получаем историю из 10 последних просмотренных задач
+    @Override
+    public ArrayList<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
+    @Override
+    public void addTaskToHistory(Task task) {
+        historyManager.add(task);
     }
 
 }

@@ -1,7 +1,7 @@
-package service;
+package ru.yandex.todo.filltasks;
 
-import model.Task;
-import service.TaskManager;
+import ru.yandex.todo.model.Task;
+import ru.yandex.todo.service.TaskManager;
 
 public class CreateTasks {
     public static void createTasks(TaskManager taskManager) {

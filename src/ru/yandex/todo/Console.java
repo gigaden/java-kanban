@@ -1,14 +1,14 @@
-package service;
+package ru.yandex.todo;
 
-import model.Epic;
-import model.Subtask;
-import model.Task;
-import service.TaskManager;
-import service.TaskStatus;
+import ru.yandex.todo.model.Epic;
+import ru.yandex.todo.model.Subtask;
+import ru.yandex.todo.model.Task;
+import ru.yandex.todo.service.TaskManager;
+import ru.yandex.todo.service.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.HashMap;
+
 public class Console {
 
     // Выводим главное меню
@@ -27,7 +27,8 @@ public class Console {
         System.out.println("11 - посмотреть подзадачи");
         System.out.println("12 - посмотреть все Эпики");
         System.out.println("13 - посмотреть все Подзадачи");
-        System.out.println("14 - завершить работу");
+        System.out.println("14 - посмотреть историю просмотров задач");
+        System.out.println("15 - завершить работу");
     }
 
 
@@ -35,11 +36,11 @@ public class Console {
     public static void printTasks(ArrayList<Task> tasks) {
         if (tasks.isEmpty()) {
             System.out.println("Не создано ни одной задачи\n");
-            return;
-        }
-        for (Task task: tasks) {
-            System.out.println(task);
-            System.out.println("____________________________________\n");
+        } else {
+            for (Task task : tasks) {
+                System.out.println(task);
+                System.out.println("____________________________________\n");
+            }
         }
     }
 
@@ -49,15 +50,15 @@ public class Console {
         int id = Integer.parseInt(sc.nextLine());
         if (!taskManager.getAllTasks().contains(taskManager.getTaskById(id))) {
             System.out.println("Задачи с таким id нет\n");
-            return;
+        } else {
+            Task task = taskManager.getTaskById(id);
+            System.out.println("Введите новое имя задачи. Прежнее: " + task.getName());
+            String name = sc.nextLine();
+            System.out.println("Введите новое описание задачи. Прежнее: " + task.getDescription());
+            String description = sc.nextLine();
+            taskManager.updateTask(id, name, description);
+            System.out.println("Изменения сохранены\n");
         }
-        Task task = taskManager.getTaskById(id);
-        System.out.println("Введите новое имя задачи. Прежнее: " + task.getName());
-        String name = sc.nextLine();
-        System.out.println("Введите новое описание задачи. Прежнее: " + task.getDescription());
-        String description = sc.nextLine();
-        taskManager.updateTask(id, name, description);
-        System.out.println("Изменения сохранены\n");
     }
 
     //Меняем статус задачи
@@ -66,20 +67,20 @@ public class Console {
         int id = Integer.parseInt(sc.nextLine());
         if (!taskManager.hasTask(id)) {
             System.out.println("Задачи с таким id нет\n");
-            return;
+        } else {
+            Task task = taskManager.getTaskById(id);
+            System.out.println("Введите новый статус задачи. Прежний: " + task.getTaskStatus());
+            System.out.println("Допустимо: new, in_progress, done");
+            String status = sc.nextLine().toUpperCase();
+            TaskStatus command = TaskStatus.valueOf(status);
+            switch (command) {
+                case NEW -> taskManager.updateTaskStatus(id, TaskStatus.NEW);
+                case IN_PROGRESS -> taskManager.updateTaskStatus(id, TaskStatus.IN_PROGRESS);
+                case DONE -> taskManager.updateTaskStatus(id, TaskStatus.DONE);
+                default -> System.out.println("Такого статуса не существует\n");
+            }
+            System.out.println("Изменения сохранены\n");
         }
-        Task task = taskManager.getTaskById(id);
-        System.out.println("Введите новый статус задачи. Прежний: " + task.getTaskStatus());
-        System.out.println("Допустимо: new, in_progress, done");
-        String status = sc.nextLine().toUpperCase();
-        TaskStatus command = TaskStatus.valueOf(status);
-        switch(command) {
-            case NEW -> taskManager.updateTaskStatus(id, TaskStatus.NEW);
-            case IN_PROGRESS -> taskManager.updateTaskStatus(id, TaskStatus.IN_PROGRESS);
-            case DONE -> taskManager.updateTaskStatus(id, TaskStatus.DONE);
-            default -> System.out.println("Такого статуса не существует\n");
-        }
-        System.out.println("Изменения сохранены\n");
     }
 
     // Удаляем задачу
@@ -88,10 +89,10 @@ public class Console {
         int id = Integer.parseInt(sc.nextLine());
         if (!taskManager.hasTask(id)) {
             System.out.println("Задачи с таким id нет\n");
-            return;
+        } else {
+            taskManager.delTaskById(id);
+            System.out.println("Задача удалена\n");
         }
-        taskManager.delTaskById(id);
-        System.out.println("Задача удалена\n");
     }
 
     // Получаем подзадачи
@@ -100,12 +101,11 @@ public class Console {
         int id = Integer.parseInt(sc.nextLine());
         if (!taskManager.hasTask(id)) {
             System.out.println("Эпика с таким id нет\n");
-            return;
         } else if (taskManager.getAllSubtasksById(id) == null) {
             System.out.println("У этой задачи нет подзадач\n");
-            return;
+        } else {
+            System.out.println(taskManager.getAllSubtasksById(id));
         }
-        System.out.println(taskManager.getAllSubtasksById(id));
     }
 
     // Добавляем подзадачу
@@ -114,19 +114,18 @@ public class Console {
         int id = Integer.parseInt(sc.nextLine());
         if (!taskManager.hasTask(id)) {
             System.out.println("Эпика с таким id нет\n");
-            return;
         } else if (taskManager.getTaskById(id).getSubtasks() == null) {
             System.out.println("Это обычная задачу, добавить в неё подзадачу нельзя\n");
-            return;
+        } else {
+            System.out.println("Введите имя подзадачи.");
+            String name = sc.nextLine();
+            System.out.println("Введите описание подзадачи.");
+            String description = sc.nextLine();
+            Epic epic = (Epic) taskManager.getTaskById(id);
+            Subtask subtask = new Subtask(epic, name, description);
+            taskManager.addTask(subtask);
+            System.out.println("Подзадача добавлена\n");
         }
-        System.out.println("Введите имя подзадачи.");
-        String name = sc.nextLine();
-        System.out.println("Введите описание подзадачи.");
-        String description = sc.nextLine();
-        Epic epic = (Epic) taskManager.getTaskById(id);
-        Subtask subtask = new Subtask(epic, name, description);
-        taskManager.addTask(subtask);
-        System.out.println("Подзадача добавлена\n");
     }
 
 }

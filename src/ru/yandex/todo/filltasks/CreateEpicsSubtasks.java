@@ -1,8 +1,8 @@
-package service;
+package ru.yandex.todo.filltasks;
 
-import model.Epic;
-import model.Subtask;
-import service.TaskManager;
+import ru.yandex.todo.model.Epic;
+import ru.yandex.todo.model.Subtask;
+import ru.yandex.todo.service.TaskManager;
 
 public class CreateEpicsSubtasks {
     public static void createEpics(TaskManager taskManager) {

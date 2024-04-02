@@ -1,9 +1,9 @@
-package model;
+package ru.yandex.todo.model;
 
-import service.TaskStatus;
+import ru.yandex.todo.service.InMemoryTaskManager;
+import ru.yandex.todo.service.TaskStatus;
 
 import java.util.HashMap;
-import service.TaskManager;
 
 public class Task {
     //  Класс для описания главных задач
@@ -22,8 +22,8 @@ public class Task {
         this.name = name;
         this.description = description;
         taskStatus = TaskStatus.NEW;
-        taskId = TaskManager.getTaskId();
-        TaskManager.setTaskId();
+        taskId = InMemoryTaskManager.getTaskId();
+        InMemoryTaskManager.setTaskId();
         subtasks = null;
     }
 
