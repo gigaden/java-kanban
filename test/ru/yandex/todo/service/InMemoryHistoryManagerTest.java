@@ -19,7 +19,7 @@ public class InMemoryHistoryManagerTest {
         }
     }
 
-    @Test
+    @Test // Проверяем добавляются ли задачи в историю
     public void shouldBePositiveWhenTasksAddedToHistory() {
         Assertions.assertNotNull(taskManager.getHistory(), "Истории нет.");
         taskManager.getTaskById(1);
@@ -28,7 +28,7 @@ public class InMemoryHistoryManagerTest {
                         taskManager.getHistory().size(), "Добавлены не все таски в историю");
     }
 
-    @Test
+    @Test // Проверяем неизменность размера массива истории при добавлении новых задач
     public void shouldBePositiveWhenAddedMoreTasksThanSizeOfHistoryArray() {
         taskManager.getTaskById(1);
         taskManager.getTaskById(2);
@@ -36,11 +36,20 @@ public class InMemoryHistoryManagerTest {
         Assertions.assertEquals(10, taskManager.getHistory().size(), "Размер массива истории увеличен");
     }
 
-    @Test
+    @Test // Проверяем, что в случае выхода за размер массива историй новая таска добавится на место первого элемента
     public void shouldBePositiveWhenArrayIsFullAndNewElementBecomeFirst() {
         taskManager.getTaskById(1);
         taskManager.getTaskById(5);
         Task newFirstTaskInHistory = taskManager.getHistory().getFirst();
-        Assertions.assertEquals(5, newFirstTaskInHistory.getTaskId());
+        Assertions.assertEquals(5, newFirstTaskInHistory.getTaskId(), "Задачи не совпадают");
+    }
+
+    @Test // Проверяем, что копия задачи сохраняется в истории после её удаления
+    public void shouldBePositiveWhenTaskSavesInHistoryAfterDeleting() {
+        Task copy = new Task(taskManager.getTaskById(1));
+        taskManager.delTaskById(1);
+        Task taskInHistory = taskManager.getHistory().getFirst();
+        Assertions.assertEquals(copy, taskInHistory, "Задача не сохранилась в истории после удаления");
+
     }
 }

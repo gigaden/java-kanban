@@ -4,6 +4,7 @@ import ru.yandex.todo.service.InMemoryTaskManager;
 import ru.yandex.todo.service.TaskStatus;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Task {
     //  Класс для описания главных задач
@@ -77,5 +78,19 @@ public class Task {
         return String.format("Task id= %d | имя: %s\n" +
                 "описание: %s\n" +
                 "статус: %s\n", getTaskId(), getName(), getDescription(), getTaskStatus());
+    }
+
+    // Переопределяем для сравнения объектов по id
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return taskId == task.taskId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskId);
     }
 }
