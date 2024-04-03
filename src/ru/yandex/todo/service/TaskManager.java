@@ -5,6 +5,7 @@ import ru.yandex.todo.model.Subtask;
 import ru.yandex.todo.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
@@ -52,7 +53,7 @@ public interface TaskManager {
     void setTaskStatus(int id, TaskStatus taskStatus);
 
     // Получаем историю из 10 последних просмотренных задач
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 
     // Добавляем просмотренные задачи в историю
     void addTaskToHistory(Task task);

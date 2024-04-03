@@ -52,4 +52,12 @@ public class InMemoryHistoryManagerTest {
         Assertions.assertEquals(copy, taskInHistory, "Задача не сохранилась в истории после удаления");
 
     }
+
+    @Test // Проверяем, что несуществующая задача не будет добавлена в историю
+    public void shouldBePositiveWhenAddedUnexistingTaskInHistory() {
+        taskManager.getTaskById(-1);
+        taskManager.getTaskById(16);
+        taskManager.getSubtaskById(55, 60);
+        Assertions.assertEquals(9, taskManager.getHistory().size());
+    }
 }

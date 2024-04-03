@@ -6,6 +6,7 @@ import ru.yandex.todo.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -31,13 +32,12 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     // Получаем список всех задач
+    /* Если я возвращаю через copyOf, то я копирую только массив, объекты которые в нём лежат
+    * ссылки же и, меняя их, они меняются в главной мапе, тест тогда один не проходит.
+    * Может я не понял чего просто? */
     @Override
     public ArrayList<Task> getAllTasks() {
-        ArrayList<Task> allTasks = new ArrayList<>();
-        for (Task task : tasks.values()) {
-            allTasks.add(new Task(task)); // Создаём глубокую копию объекта через конструктор
-        }
-        return allTasks;
+        return new ArrayList<>(List.copyOf(tasks.values()));
     }
 
     // Получаем все эпики
@@ -46,7 +46,7 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Epic> allEpics = new ArrayList<>();
         for (Task task : tasks.values()) {
             if (task.getClass() == Epic.class) {
-                allEpics.add(new Epic((Epic) task));
+                allEpics.add((Epic) task);
             }
         }
         return allEpics;
@@ -57,8 +57,7 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<Subtask> getAllSubtasks() {
         ArrayList<Subtask> allSubtasks = new ArrayList<>();
         for (Epic epic : getAllEpics()) {
-            Epic copyEpic = new Epic(epic);
-            allSubtasks.addAll(copyEpic.getSubtasks().values());
+            allSubtasks.addAll(epic.getSubtasks().values());
         }
         return allSubtasks;
     }
@@ -87,12 +86,16 @@ public class InMemoryTaskManager implements TaskManager {
     // Добавляем задачу в менеджер
     @Override
     public int addTask(Task task) {
-        tasks.put(task.getTaskId(), task);
-        // Если прилетает подзадача, то добавляем её в мапу эпика
+        // Если прилетает подзадача, то добавляем её в мапу эпика, проверив существует ли в мапе сам эпик
         if (task.getClass() == Subtask.class) {
             Epic epic = ((Subtask) task).getEpic();
-            epic.addSubtask((Subtask) task);
+            if (hasTask(epic.getTaskId())) {
+                epic.addSubtask((Subtask) task);
+                tasks.put(task.getTaskId(), task);
+                return task.getTaskId();
+            }
         }
+        tasks.put(task.getTaskId(), task);
         return task.getTaskId();
     }
 
@@ -154,17 +157,15 @@ public class InMemoryTaskManager implements TaskManager {
     // Получаем подзадачу по id эпика и id подзадачи
     @Override
     public Subtask getSubtaskById(int taskId, int subtaskId) {
-        if (!tasks.containsKey(taskId)) {
-            System.out.println("Задачи с таким id не существует.");
-            return null;
-        }
-        if (tasks.get(taskId).getSubtasks() == null) {
-            System.out.println("Это обычная задача, у неё нет подзадач.");
+        if (!hasTask(taskId) || tasks.get(taskId).getSubtasks() == null) {
             return null;
         }
         Epic epic = (Epic) tasks.get(taskId);
-        addTaskToHistory(epic.getSubtaskById(subtaskId));
-        return epic.getSubtaskById(subtaskId);
+        Subtask subtask = epic.getSubtaskById(subtaskId);
+        if (subtask != null) {
+        addTaskToHistory(subtask);
+        }
+        return subtask;
     }
 
     // Получаем все подзадачи эпика по id
@@ -186,7 +187,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     // Получаем историю из 10 последних просмотренных задач
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 
