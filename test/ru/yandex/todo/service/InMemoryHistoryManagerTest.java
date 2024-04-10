@@ -57,7 +57,7 @@ public class InMemoryHistoryManagerTest {
     public void shouldBePositiveWhenAddedUnexistingTaskInHistory() {
         taskManager.getTaskById(-1);
         taskManager.getTaskById(16);
-        taskManager.getSubtaskById(55, 60);
+        taskManager.getSubtaskById(55);
         Assertions.assertEquals(9, taskManager.getHistory().size());
     }
 }

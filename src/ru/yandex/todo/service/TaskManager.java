@@ -13,23 +13,47 @@ public interface TaskManager {
     // Получаем список всех задач
     ArrayList<Task> getAllTasks();
 
+    // Получаем список всех простых задач
+    ArrayList<Task> getAllSimpleTasks();
+
     // Получаем все эпики
     ArrayList<Epic> getAllEpics();
 
     // Получаем все подзадачи
     ArrayList<Subtask> getAllSubtasks();
 
+    // Добавляем задачу в менеджер
+    int addTask(Task task);
+
+    // Добавляем эпик в менеджер
+    int addEpic(Epic epic);
+
+    // Добавляем подзадачу в менеджер
+    int addSubtask(Epic epic, Subtask task);
+
     // Удаляем все задачи
     void deleteAllTasks();
+
+    // Удаляем все простые задачи
+    void deleteAllSimpleTasks();
 
     // Удаляем все эпики
     void delAllEpics();
 
-    // Добавляем задачу в менеджер
-    int addTask(Task task);
+    // Удаляем все подзадачи
+    void delAllSubtasks();
+
+    // Удаляем все подзадачи эпика
+    void delAllSubtasks(Epic epic);
 
     // Обновляем задачу
     void updateTask(int id, String name, String description);
+
+    // Обновляем эпик
+    void updateEpic(int id, String name, String description);
+
+    // Обновляем подзадачу
+    void updateSubtask(int id, String name, String description);
 
     // Меняем статус задачи
     void updateTaskStatus(int id, TaskStatus taskStatus);
@@ -37,14 +61,20 @@ public interface TaskManager {
     // Удаляем задачу по id
     void delTaskById(int id);
 
-    // Удаляем все подзадачи эпика
-    void delAllSubtasks(Task task);
+    // Удаляем эпик по id
+    void delEpicById(int id);
+
+    // Удаляем  подзадачу по id
+    void delSubtaskById(int id);
 
     // Получаем задачу по id
     Task getTaskById(int id);
 
-    // Получаем подзадачу по id эпика и id подзадачи
-    Subtask getSubtaskById(int taskId, int subtaskId);
+    // Получаем эпик по id
+    Epic getEpicById(int id);
+
+    // Получаем подзадачу по id
+    Subtask getSubtaskById(int id);
 
     // Получаем все подзадачи эпика по id
     ArrayList<Subtask> getAllSubtasksById(int id);
