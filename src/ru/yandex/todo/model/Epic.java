@@ -46,9 +46,6 @@ public class Epic extends Task {
     public void delSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
             subtasks.remove(id);
-            System.out.printf("Подзадача с id %d удалена\n", id);
-        } else {
-            System.out.println("Подзадачи с таким id нет");
         }
     }
 

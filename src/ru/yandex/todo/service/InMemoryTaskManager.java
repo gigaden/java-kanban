@@ -14,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     private static int id; // Переменная для хранения id задачи
     private final HashMap<Integer, Task> tasks; // Хранилище всех задач
 
-    protected final HistoryManager historyManager;
+    protected final HistoryManager historyManager; // Менеджер для управления историей просмотров задач
 
     public InMemoryTaskManager() {
         id = 1;
@@ -33,8 +33,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     // Получаем список всех задач
     /* Если я возвращаю через copyOf, то я копирую только массив, объекты которые в нём лежат
-    * ссылки же и, меняя их, они меняются в главной мапе, тест тогда один не проходит.
-    * Может я не понял чего просто? */
+     * ссылки же и, меняя их, они меняются в главной мапе, тест тогда один не проходит.
+     * Может я не понял чего просто? */
     @Override
     public ArrayList<Task> getAllTasks() {
         return new ArrayList<>(List.copyOf(tasks.values()));
@@ -71,6 +71,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllTasks() {
         tasks.clear();
+        historyManager.clearAll();
     }
 
     // Удаляем все эпики
@@ -126,10 +127,12 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = subtask.getEpic();
             epic.delSubtaskById(id); // удаляем из эпика
             tasks.remove(id);
+            historyManager.remove(id);
             epic.checkSubtasksStatusDone(); // проверяем статусы эпика
         } else if (tasks.get(id).getClass() == Epic.class) {
             delAllSubtasks(tasks.get(id)); // Если задача - эпик, то очищаем его хэшмапу с субтасками
         }
+        historyManager.remove(id);
         tasks.remove(id);
 
     }
@@ -139,6 +142,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void delAllSubtasks(Task task) {
         for (Integer key : task.getSubtasks().keySet()) {
             tasks.remove(key);
+            historyManager.remove(key);
         }
     }
 
@@ -163,7 +167,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = (Epic) tasks.get(taskId);
         Subtask subtask = epic.getSubtaskById(subtaskId);
         if (subtask != null) {
-        addTaskToHistory(subtask);
+            addTaskToHistory(subtask);
         }
         return subtask;
     }
