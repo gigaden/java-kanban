@@ -2,7 +2,6 @@ package ru.yandex.todo.service;
 
 import ru.yandex.todo.model.Task;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
