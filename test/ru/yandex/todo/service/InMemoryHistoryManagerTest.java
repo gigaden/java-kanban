@@ -98,4 +98,16 @@ public class InMemoryHistoryManagerTest {
         Assertions.assertEquals(taskManager.getHistory().getFirst(), task,
                 "Задача не добавилась в конец истории");
     }
+
+    @Test //  Проверяем удаление из истории задач с несуществующим id
+    public void shouldBePositiveWhenTryToDeleteTaskWithUnExistingId() {
+        taskManager.historyManager.remove(156);
+        Assertions.assertEquals(historySize, taskManager.getHistory().size());
+    }
+
+    @Test //  Проверяем, что нельзя добавить в историю несуществующую задачу
+    public void shouldBePositiveWhenTryToAddNull() {
+        taskManager.historyManager.add(null);
+        Assertions.assertEquals(historySize, taskManager.getHistory().size(), "Null добавился в историю");
+    }
 }
