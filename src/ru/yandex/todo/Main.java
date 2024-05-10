@@ -4,13 +4,15 @@ import ru.yandex.todo.filltasks.CreateEpicsSubtasks;
 import ru.yandex.todo.filltasks.CreateTasks;
 import ru.yandex.todo.model.Epic;
 import ru.yandex.todo.model.Task;
-import ru.yandex.todo.service.*;
+import ru.yandex.todo.service.FileBackedTaskManager;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         /* Логика работы следующая: - ru.yandex.todo.service.InMemoryTaskManager - для управления задачами и хранении задач в хэшмапе.
         В хэшмапу tasks попадают все задачи, подзадачи и эпики с уникальным id.
@@ -28,7 +30,10 @@ public class Main {
         // три хэшмапа для Task, Epic и Subtask отдельно?
 
 
-        TaskManager inMemoryTaskManager = Managers.getDefault();
+        // TaskManager inMemoryTaskManager = Managers.getDefault();
+        File file = new File("base.csv");  // Файл для записи тасков
+        FileBackedTaskManager inMemoryTaskManager = new FileBackedTaskManager(file);
+        inMemoryTaskManager.save(); // Записываем таски в файл
         CreateTasks.createTasks(inMemoryTaskManager); // наполнить тасками
         CreateEpicsSubtasks.createEpics(inMemoryTaskManager); // наполнить эпиками и подзадачами
         Scanner sc = new Scanner(System.in);

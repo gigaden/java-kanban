@@ -2,11 +2,16 @@ package ru.yandex.todo.model;
 
 import ru.yandex.todo.service.InMemoryTaskManager;
 import ru.yandex.todo.service.TaskStatus;
+import ru.yandex.todo.service.TaskType;
 
 public class Subtask extends Task {
     // Класс для описания подзадач
 
     private final Epic epic;
+
+    public Subtask(Epic epic) {
+        this.epic = epic;
+    }
 
     public Subtask(Epic epic, String name, String description) {
         this.epic = epic;
@@ -43,10 +48,9 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return String.format("Subtask id= %d | имя: %s\n" +
-                "описание: %s\n" +
-                "эпик: id= %d  имя: %s\n" +
-                "статус: %s\n", getTaskId(), getName(), getDescription(), epic.getTaskId(), epic.getName(), taskStatus);
+
+        return String.format("%d, %s, %s, %s, %s, %s",
+                getTaskId(), TaskType.SUBTASK, getName(), getTaskStatus(), getDescription(), epic.toString());
     }
 
 }

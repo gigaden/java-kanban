@@ -26,7 +26,7 @@ public interface TaskManager {
     void delAllEpics();
 
     // Добавляем задачу в менеджер
-    int addTask(Task task);
+    void  addTask(Task task);
 
     // Обновляем задачу
     void updateTask(int id, String name, String description);

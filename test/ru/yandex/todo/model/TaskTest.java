@@ -31,7 +31,8 @@ class TaskTest {
     @Test // Проверяем получение задачи по id
     public void shouldBePositiveWhenTaskIsAddedAndIdIsEquals() {
         Task task = new Task("Test addNewTask", "Test addNewTask description");
-        final int taskId = taskManager.addTask(task);
+        final int taskId = task.getTaskId();
+        taskManager.addTask(task);
 
         final Task savedTask = taskManager.getTaskById(taskId);
 
@@ -42,7 +43,8 @@ class TaskTest {
     @Test // Проверяем получение эпика по id
     public void shouldBePositiveWhenChildsIdOfTaskIsEquals() {
         Task epic = new Epic("Test addNewTask", "Test addNewTask description");
-        final int epicId = taskManager.addTask(epic);
+        final int epicId = epic.getTaskId();
+        taskManager.addTask(epic);
 
         final Task savedTask = taskManager.getTaskById(epicId);
 
