@@ -50,13 +50,4 @@ public class FileBackedTaskManagerTest {
                 "Таски не загрузились в новый менеджер");
 
     }
-
-    @Test
-    public void shouldBePositiveWhenFileIsNullAndReturnedManagerWithEmptyMap() {
-        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(null);
-        Assertions.assertTrue(manager.getAllTasks().isEmpty(), "Нет пустой мапы");
-        Task task = new Task("task", "descr");
-        manager.addTask(task);
-        Assertions.assertEquals(1, manager.getAllTasks().size(), "Таска не добавилась");
-    }
 }

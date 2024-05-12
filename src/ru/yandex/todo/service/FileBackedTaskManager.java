@@ -47,9 +47,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public FileBackedTaskManager(File file) {
-        // В случае прилёта null здесь решил выкинуть эксепшн.
-        // В методе loadFromFile решил сделать по другому.
-        // Х.з. как лучше
         if (file == null) {
             throw new ManagerSaveException("Передан null вместо файла");
         }
@@ -63,26 +60,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     // Восстанавливаем данные из файла при запуске приложения
     public static FileBackedTaskManager loadFromFile(File file) throws ManagerSaveException {
-        // Если прокинуть сюда null, то эксепшена нет и в директории создаётся файл "null" без расширения,
-        // куда спокойно пишутся задачи. Т.е. менеджер получается условно рабочим. В голову приходят два пути решения:
-        // 1) Кинуть эксепшн и тормознуть программу
-        // 2) Создать рабочий менеджер, передав в него новый файл и выдав предупреждение
         if (file == null) {
-            System.out.println("Данные не были считаны, т.к. передан null вместо файла." +
-                    "\nМенеджером можно пользоваться, все задачи будут сохранены в файл 'tmp.csv'");
-            return new FileBackedTaskManager(new File("tmp.csv"));
+            throw new ManagerSaveException("Передан null вместо файла");
         }
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
+        int idCount = 1; // Инициализируем счётчик для новых задач
         try {
             List<String> databaseList = Files.readAllLines(file.toPath());
-            if (databaseList.size() < 3) {
-                return manager; // Возвращаем не заполненный менеджер, если в файле не достаточно данных
+            for (int i = 1; i < databaseList.size(); i++) {
+                Task task = manager.fromString(databaseList.get(i));
+                if (idCount < task.getTaskId()) {
+                    idCount = task.getTaskId();
+                }
+                manager.loadTaskToMap(task);
             }
-            for (int i = 2; i < databaseList.size(); i++) {
-                manager.loadTaskToMap(manager.fromString(databaseList.get(i)));
-            }
-            // Меняем счётчик для новых задач из сохранённого значения в файле
-            FileBackedTaskManager.changeId(Integer.parseInt(databaseList.get(0)));
+            // Меняем счётчик для новых задач, делая его на 1 больше максимального в файле
+            FileBackedTaskManager.changeId(idCount + 1);
 
             return manager;
         } catch (IOException e) {
@@ -96,7 +89,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void save() throws ManagerSaveException {
         try (BufferedWriter writer =
                      new BufferedWriter(new FileWriter(String.valueOf(database), StandardCharsets.UTF_8))) {
-            writer.write(getTaskId() + "\n"); // Сохраняем значения счётчика задач
             writer.write("id,type,name,status,description,epic\n"); // Пишем хэдер
             for (Task task : getAllTasks()) {
                 writer.write(task.toString() + "\n");
