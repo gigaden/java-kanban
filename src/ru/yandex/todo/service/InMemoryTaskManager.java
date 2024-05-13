@@ -29,6 +29,10 @@ public class InMemoryTaskManager implements TaskManager {
         id++;
     }
 
+    protected static void changeId(int newId) {
+        id = newId;
+    }
+
 
     // Получаем список всех задач
     /* Если я возвращаю через copyOf, то я копирую только массив, объекты которые в нём лежат
@@ -85,18 +89,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     // Добавляем задачу в менеджер
     @Override
-    public int addTask(Task task) {
+    public void addTask(Task task) {
         // Если прилетает подзадача, то добавляем её в мапу эпика, проверив существует ли в мапе сам эпик
         if (task.getClass() == Subtask.class) {
             Epic epic = ((Subtask) task).getEpic();
             if (hasTask(epic.getTaskId())) {
                 epic.addSubtask((Subtask) task);
                 tasks.put(task.getTaskId(), task);
-                return task.getTaskId();
             }
         }
         tasks.put(task.getTaskId(), task);
-        return task.getTaskId();
     }
 
     // Обновляем задачу
@@ -197,6 +199,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addTaskToHistory(Task task) {
         historyManager.add(task);
+    }
+
+
+    // Метод для загрузки таски в мапу из файла
+    protected void loadTaskToMap(Task task) {
+        tasks.put(task.getTaskId(), task);
     }
 
 }

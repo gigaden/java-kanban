@@ -2,6 +2,7 @@ package ru.yandex.todo.model;
 
 import ru.yandex.todo.service.InMemoryTaskManager;
 import ru.yandex.todo.service.TaskStatus;
+import ru.yandex.todo.service.TaskType;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -72,12 +73,17 @@ public class Task {
         return taskId;
     }
 
+    // Меняем id
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
+
 
     @Override
     public String toString() {
-        return String.format("Task id= %d | имя: %s\n" +
-                "описание: %s\n" +
-                "статус: %s\n", getTaskId(), getName(), getDescription(), getTaskStatus());
+
+        return String.format("%d, %s, %s, %s, %s",
+                getTaskId(), TaskType.TASK.toString(), getName(), getTaskStatus(), getDescription());
     }
 
     // Переопределяем для сравнения объектов по id

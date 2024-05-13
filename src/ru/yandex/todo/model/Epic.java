@@ -1,11 +1,17 @@
 package ru.yandex.todo.model;
+
 import ru.yandex.todo.service.InMemoryTaskManager;
 import ru.yandex.todo.service.TaskStatus;
+import ru.yandex.todo.service.TaskType;
 
 import java.util.HashMap;
 
 public class Epic extends Task {
     // Класс для создания эпика
+
+    public Epic() {
+        subtasks = new HashMap<>();
+    }
 
 
     public Epic(String name, String description) {
@@ -74,7 +80,7 @@ public class Epic extends Task {
     // Получаем копию субтасков
     public HashMap<Integer, Subtask> getCopyOfSubtasks() {
         HashMap<Integer, Subtask> copy = new HashMap<>();
-        for (int key: subtasks.keySet()) {
+        for (int key : subtasks.keySet()) {
             copy.put(key, new Subtask(subtasks.get(key)));
         }
         return copy;
@@ -83,10 +89,6 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return String.format("Epic id= %d | имя: %s\n" +
-                "описание: %s\n" +
-                "статус: %s\n" +
-                "подзадач всего: %d\n" +
-                "подзадачи: %s", getTaskId(), getName(), getDescription(), getTaskStatus(), subtasks.size(), getSubtasks());
+        return String.format("%d, %s, %s, %s, %s", getTaskId(), TaskType.EPIC, getName(), getTaskStatus(), getDescription());
     }
 }
