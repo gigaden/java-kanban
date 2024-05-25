@@ -115,9 +115,8 @@ public class Task {
 
         return String.format("%d, %s, %s, %s, %s, %s, %s, %s",
                 getTaskId(), TaskType.TASK.toString(), getName(), getTaskStatus(),
-                getDescription()
-                , startTime != null ? startTime.format(dateTimeFormatter) : null, duration.toMinutes()
-                , getEndTime() != null ? getEndTime().format(dateTimeFormatter) : null);
+                getDescription(), startTime != null ? startTime.format(dateTimeFormatter) : null, duration.toMinutes(),
+                getEndTime() != null ? getEndTime().format(dateTimeFormatter) : null);
     }
 
     // Переопределяем для сравнения объектов по id

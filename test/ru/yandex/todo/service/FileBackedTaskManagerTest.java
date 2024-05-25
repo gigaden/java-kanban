@@ -68,8 +68,8 @@ public class FileBackedTaskManagerTest {
     @Test
     public void shouldBePositiveWhenAddeWrongWayToFile() {
         Assertions.assertThrows(ManagerSaveException.class, () ->
-                        FileBackedTaskManager.loadFromFile(new File("C://windows/system32"))
-                , "Попытка прочитать несуществующий файл должна приводить к ошибке");
+                        FileBackedTaskManager.loadFromFile(new File("C://windows/system32")),
+                "Попытка прочитать несуществующий файл должна приводить к ошибке");
     }
 
     // Проверяем выброс исключения при добавлении задачи, пересекающейся с другими
@@ -90,8 +90,8 @@ public class FileBackedTaskManagerTest {
         fileBackedTaskManager
                 .addTask(new Task("task80", "descr80", null, 60));
         int sizeAfterAddedTask = fileBackedTaskManager.getPrioritizedTasks().size();
-        Assertions.assertEquals(sizeOftreeset, sizeAfterAddedTask
-                , "Задача без времения начала не должна попасть в трисет");
+        Assertions.assertEquals(sizeOftreeset, sizeAfterAddedTask,
+                "Задача без времения начала не должна попасть в трисет");
     }
 
     // Проверяем расчёт времени начала и окончания эпика
