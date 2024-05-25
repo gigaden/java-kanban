@@ -14,10 +14,10 @@ public interface TaskManager {
     ArrayList<Task> getAllTasks();
 
     // Получаем все эпики
-    ArrayList<Epic> getAllEpics();
+    List<Epic> getAllEpics();
 
     // Получаем все подзадачи
-    ArrayList<Subtask> getAllSubtasks();
+    List<Subtask> getAllSubtasks();
 
     // Удаляем все задачи
     void deleteAllTasks();
@@ -26,7 +26,7 @@ public interface TaskManager {
     void delAllEpics();
 
     // Добавляем задачу в менеджер
-    void  addTask(Task task);
+    void addTask(Task task);
 
     // Обновляем задачу
     void updateTask(int id, String name, String description);

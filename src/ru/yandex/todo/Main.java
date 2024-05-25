@@ -8,6 +8,7 @@ import ru.yandex.todo.service.FileBackedTaskManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
@@ -62,7 +63,7 @@ public class Main {
                     String name = sc.nextLine();
                     System.out.println("Введите описание задачи");
                     String description = sc.nextLine();
-                    inMemoryTaskManager.addTask(new Task(name, description));
+                    inMemoryTaskManager.addTask(new Task(name, description, LocalDateTime.now(), 30));
                     System.out.println("Задача добавлена");
                     break;
                 }

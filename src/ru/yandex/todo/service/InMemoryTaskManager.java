@@ -1,17 +1,19 @@
 package ru.yandex.todo.service;
 
+import ru.yandex.todo.exceptions.ManagerAddException;
 import ru.yandex.todo.model.Epic;
 import ru.yandex.todo.model.Subtask;
 import ru.yandex.todo.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     // Класс для управления задачами
     private static int id; // Переменная для хранения id задачи
     private final HashMap<Integer, Task> tasks; // Хранилище всех задач
+    private final TreeSet<Task> tasksTreeSet; // Задачи, отсортированные по дате начала
 
     protected final HistoryManager historyManager; // Менеджер для управления историей просмотров задач
 
@@ -19,6 +21,7 @@ public class InMemoryTaskManager implements TaskManager {
         id = 1;
         tasks = new HashMap<>();
         historyManager = Managers.getDefaultHistory();
+        tasksTreeSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
     public static int getTaskId() {
@@ -45,24 +48,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     // Получаем все эпики
     @Override
-    public ArrayList<Epic> getAllEpics() {
-        ArrayList<Epic> allEpics = new ArrayList<>();
-        for (Task task : tasks.values()) {
-            if (task.getClass() == Epic.class) {
-                allEpics.add((Epic) task);
-            }
-        }
-        return allEpics;
+    public List<Epic> getAllEpics() {
+        return tasks.values().stream()
+                .filter(t -> t.getClass() == Epic.class)
+                .map(t -> (Epic) t)
+                .collect(Collectors.toList());
     }
 
     // Получаем все подзадачи
     @Override
-    public ArrayList<Subtask> getAllSubtasks() {
-        ArrayList<Subtask> allSubtasks = new ArrayList<>();
-        for (Epic epic : getAllEpics()) {
-            allSubtasks.addAll(epic.getSubtasks().values());
-        }
-        return allSubtasks;
+    public List<Subtask> getAllSubtasks() {
+        return getAllEpics().stream()
+                .map(e -> e.getSubtasks().values()).flatMap(Collection::stream).collect(Collectors.toList());
+
     }
 
     // Проверяем есть ли задача в менеджере
@@ -75,6 +73,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllTasks() {
         tasks.clear();
         historyManager.clearAll();
+        tasksTreeSet.clear();
     }
 
     // Удаляем все эпики
@@ -83,6 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
         // Наверное проще было сделать в InMemoryTaskManager три мапы под каждый класс Task, Epic, Subtask ?
         for (Epic epic : getAllEpics()) {
             delAllSubtasks(epic); // удаляем подзадачи
+            tasksTreeSet.remove(epic);
             tasks.remove(epic.getTaskId());
         }
     }
@@ -90,15 +90,24 @@ public class InMemoryTaskManager implements TaskManager {
     // Добавляем задачу в менеджер
     @Override
     public void addTask(Task task) {
+        // Проверяем пересекается ли новая задача с какими-либо другими существующими задачами
+        if (task.getClass() != Epic.class && task.getStartTime() != null
+                && tasksTreeSet.stream().anyMatch(t -> taskIsCrossing(task, t))) {
+            throw new ManagerAddException("Время задачи пересекается с уже созданными задачами.");
+        }
         // Если прилетает подзадача, то добавляем её в мапу эпика, проверив существует ли в мапе сам эпик
         if (task.getClass() == Subtask.class) {
             Epic epic = ((Subtask) task).getEpic();
             if (hasTask(epic.getTaskId())) {
                 epic.addSubtask((Subtask) task);
-                tasks.put(task.getTaskId(), task);
             }
         }
         tasks.put(task.getTaskId(), task);
+        // Если у задачи не задано время начала, или это эпик, то не записываем её в трисет
+        if (task.getClass() != Epic.class && task.getStartTime() != null) {
+            tasksTreeSet.add(task);
+        }
+
     }
 
     // Обновляем задачу
@@ -123,6 +132,9 @@ public class InMemoryTaskManager implements TaskManager {
     public void delTaskById(int id) {
         /* Т.к. решил хранить подзадачи в мапе здесь и в мапе эпика, то нужно дополнительно удалять
          * подзадачу из мапы эпика */
+        if (tasksTreeSet.contains(tasks.get(id))) {
+            tasksTreeSet.remove(tasks.get(id));
+        }
         if (tasks.get(id).getClass() == Subtask.class) {
             Subtask subtask = (Subtask) tasks.get(id);
             Epic epic = subtask.getEpic();
@@ -142,6 +154,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void delAllSubtasks(Task task) {
         for (Integer key : task.getSubtasks().keySet()) {
+            if (tasksTreeSet.contains(tasks.get(key))) {
+                tasksTreeSet.remove(tasks.get(key));
+            }
             tasks.remove(key);
             historyManager.remove(key);
         }
@@ -205,6 +220,33 @@ public class InMemoryTaskManager implements TaskManager {
     // Метод для загрузки таски в мапу из файла
     protected void loadTaskToMap(Task task) {
         tasks.put(task.getTaskId(), task);
+        if (task.getClass() != Epic.class && task.getStartTime() != null) {
+            tasksTreeSet.add(task);
+        }
+    }
+
+    // Выводим задачи сортируя по приоритету - по времени начала задачи
+    public List<Task> getPrioritizedTasks() {
+        return tasksTreeSet.stream().toList();
+    }
+
+    // Проверяем пересечение задач по времени
+    public boolean taskIsCrossing(Task task1, Task task2) {
+
+        if (tasksTreeSet.contains(task1)) {
+            return true;
+        }
+        LocalDateTime start1 = task1.getStartTime();
+        LocalDateTime end1 = task1.getEndTime();
+        LocalDateTime start2 = task2.getStartTime();
+        LocalDateTime end2 = task2.getEndTime();
+        if (start1.isBefore(start2) && start2.isBefore(end1)) {
+            return true;
+        } else if (start2.isBefore(start1) && start1.isBefore(end2)) {
+            return true;
+        }
+
+        return false;
     }
 
 }

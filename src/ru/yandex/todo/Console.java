@@ -6,6 +6,7 @@ import ru.yandex.todo.model.Task;
 import ru.yandex.todo.service.TaskManager;
 import ru.yandex.todo.service.TaskStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -122,7 +123,7 @@ public class Console {
             System.out.println("Введите описание подзадачи.");
             String description = sc.nextLine();
             Epic epic = (Epic) taskManager.getTaskById(id);
-            Subtask subtask = new Subtask(epic, name, description);
+            Subtask subtask = new Subtask(epic, name, description, LocalDateTime.now(), 30);
             taskManager.addTask(subtask);
             System.out.println("Подзадача добавлена\n");
         }

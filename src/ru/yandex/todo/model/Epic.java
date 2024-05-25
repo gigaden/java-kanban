@@ -4,10 +4,16 @@ import ru.yandex.todo.service.InMemoryTaskManager;
 import ru.yandex.todo.service.TaskStatus;
 import ru.yandex.todo.service.TaskType;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Epic extends Task {
     // Класс для создания эпика
+
+    protected LocalDateTime endTime;
 
     public Epic() {
         subtasks = new HashMap<>();
@@ -30,6 +36,8 @@ public class Epic extends Task {
         this.description = another.description;
         this.taskStatus = another.taskStatus;
         this.subtasks = another.getCopyOfSubtasks();
+        this.startTime = another.startTime;
+        this.endTime = another.endTime;
     }
 
 
@@ -86,9 +94,59 @@ public class Epic extends Task {
         return copy;
     }
 
+    // Устанавливаем время окончания эпика вручную(нужно для десереализации из файла)
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    // Вовзращаем дату окончания Эпика - дату задачи, которая предполагается завершиться позже всех
+    @Override
+    public LocalDateTime getEndTime() {
+        List<Subtask> subtasksList = subtasks.values().stream().toList();
+        if (!subtasksList.isEmpty()) {
+            List<Subtask> sortedSubtasks = subtasksList.stream()
+                    .filter(s -> s.taskStatus != TaskStatus.DONE)
+                    .sorted(Comparator.comparing(s -> s.getEndTime()))
+                    .collect(Collectors.toList());
+            return sortedSubtasks.getLast().getEndTime();
+        }
+        return null;
+    }
+
+    // Устанавливаем время начала эпика вручную(нужно для десереализации из файла)
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    // Вовзращаем дату начала Эпика - дату задачи, которая начинается всех раньше
+    public LocalDateTime getStartTime() {
+        List<Subtask> subtasksList = subtasks.values().stream().toList();
+        if (!subtasksList.isEmpty()) {
+            List<Subtask> sortedSubtasks = subtasksList.stream()
+                    .filter(s -> s.taskStatus != TaskStatus.DONE)
+                    .sorted(Comparator.comparing(s -> s.getEndTime()))
+                    .collect(Collectors.toList());
+            return sortedSubtasks.getFirst().startTime;
+        }
+        return null;
+    }
+
+    // Получаем продолжительность эпика, исходя из предполагаемой продолжительности всех задач
+    public int getDuration() {
+        long sum = subtasks.values().stream().filter(s -> s.taskStatus != TaskStatus.DONE)
+                .map(s -> s.duration.toMinutes()).reduce(0L, (a, b) -> a + b);
+        return (int) sum;
+
+    }
+
 
     @Override
     public String toString() {
-        return String.format("%d, %s, %s, %s, %s", getTaskId(), TaskType.EPIC, getName(), getTaskStatus(), getDescription());
+        return String.
+                format("%d, %s, %s, %s, %s, %s, %d, %s",
+                        getTaskId(), TaskType.EPIC, getName(), getTaskStatus(), getDescription()
+                        , getStartTime() != null ? getStartTime().format(dateTimeFormatter) : null
+                        , getDuration()
+                        , getEndTime() != null ? getEndTime().format(dateTimeFormatter) : endTime);
     }
 }
