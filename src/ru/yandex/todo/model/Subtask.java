@@ -56,8 +56,8 @@ public class Subtask extends Task {
     public String toString() {
 
         return String.format("%d, %s, %s, %s, %s, %d, %s, %s, %s",
-                getTaskId(), TaskType.SUBTASK, getName(), getTaskStatus(), getDescription(), epic.getTaskId()
-                , startTime.format(dateTimeFormatter), duration.toMinutes(), getEndTime().format(dateTimeFormatter));
+                getTaskId(), TaskType.SUBTASK, getName(), getTaskStatus(), getDescription(), epic.getTaskId(),
+                startTime.format(dateTimeFormatter), duration.toMinutes(), getEndTime().format(dateTimeFormatter));
     }
 
 }
