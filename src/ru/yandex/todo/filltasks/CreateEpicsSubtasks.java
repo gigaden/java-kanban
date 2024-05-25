@@ -21,20 +21,16 @@ public class CreateEpicsSubtasks {
         System.out.println();
 
         // добавляем подзадачи в эпики
-        Subtask subtask1 = new Subtask(epic1, "Субтаск 1", "Описание субтаска 1"
-                , localDateTime.plusDays(4), 20);
+        Subtask subtask1 = new Subtask(epic1, "Субтаск 1", "Описание субтаска 1", localDateTime.plusDays(4), 20);
         epic1.addSubtask(subtask1);
         taskManager.addTask(subtask1);
-        Subtask subtask2 = new Subtask(epic1, "Субтаск 2", "Описание субтаска 2"
-                , localDateTime.plusDays(5), 30);
+        Subtask subtask2 = new Subtask(epic1, "Субтаск 2", "Описание субтаска 2", localDateTime.plusDays(5), 30);
         epic1.addSubtask(subtask2);
         taskManager.addTask(subtask2);
-        Subtask subtask3 = new Subtask(epic2, "Субтаск 3", "Описание субтаска 3"
-                , localDateTime.plusDays(6), 40);
+        Subtask subtask3 = new Subtask(epic2, "Субтаск 3", "Описание субтаска 3", localDateTime.plusDays(6), 40);
         epic2.addSubtask(subtask3);
         taskManager.addTask(subtask3);
-        Subtask subtask4 = new Subtask(epic1, "Субтаск 4", "Описание субтаска 4"
-                , localDateTime.plusDays(7), 50);
+        Subtask subtask4 = new Subtask(epic1, "Субтаск 4", "Описание субтаска 4", localDateTime.plusDays(7), 50);
         epic1.addSubtask(subtask4);
         taskManager.addTask(subtask4);
     }
