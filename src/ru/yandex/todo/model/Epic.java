@@ -104,11 +104,9 @@ public class Epic extends Task {
     public LocalDateTime getEndTime() {
         List<Subtask> subtasksList = subtasks.values().stream().toList();
         if (!subtasksList.isEmpty()) {
-            List<Subtask> sortedSubtasks = subtasksList.stream()
-                    .filter(s -> s.taskStatus != TaskStatus.DONE)
+            return subtasksList.stream()
                     .sorted(Comparator.comparing(s -> s.getEndTime()))
-                    .collect(Collectors.toList());
-            return sortedSubtasks.getLast().getEndTime();
+                    .collect(Collectors.toList()).getLast().getEndTime();
         }
         return null;
     }
@@ -122,11 +120,9 @@ public class Epic extends Task {
     public LocalDateTime getStartTime() {
         List<Subtask> subtasksList = subtasks.values().stream().toList();
         if (!subtasksList.isEmpty()) {
-            List<Subtask> sortedSubtasks = subtasksList.stream()
-                    .filter(s -> s.taskStatus != TaskStatus.DONE)
-                    .sorted(Comparator.comparing(s -> s.getEndTime()))
-                    .collect(Collectors.toList());
-            return sortedSubtasks.getFirst().startTime;
+            return subtasksList.stream()
+                    .sorted(Comparator.comparing(s -> s.getStartTime()))
+                    .collect(Collectors.toList()).getFirst().getStartTime();
         }
         return null;
     }
