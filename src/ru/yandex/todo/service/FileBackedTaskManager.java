@@ -135,7 +135,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 epic.setEndTime(LocalDateTime.parse(taskList[7], Task.dateTimeFormatter));
 
                 // Проверяем есть ли сабтаски эпика в мапе, если есть, то закидываем их к эпику
-                ArrayList<Task> tasks = getAllTasks();
+                List<Task> tasks = getAllTasks();
                 for (Task task : tasks) {
                     if (task.getClass() == Subtask.class) {
                         Subtask subtask = (Subtask) task;
