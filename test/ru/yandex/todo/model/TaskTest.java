@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import ru.yandex.todo.service.Managers;
 import ru.yandex.todo.service.TaskManager;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,22 +16,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class TaskTest {
 
     private TaskManager taskManager;
+    private LocalDateTime localDateTime;
 
     @BeforeEach
     public void beforeEach() {
         taskManager = Managers.getDefault();
+        localDateTime = LocalDateTime.now();
     }
 
     @Test // Проверяем добавляется ли задачи
     public void shouldBePositiveWhenTaskIsAdded() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description");
+        Task task = new Task("Test addNewTask", "Test addNewTask description", localDateTime, 50);
         taskManager.addTask(task);
         Assertions.assertEquals(1, taskManager.getAllTasks().size());
     }
 
     @Test // Проверяем получение задачи по id
     public void shouldBePositiveWhenTaskIsAddedAndIdIsEquals() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description");
+        Task task = new Task("Test addNewTask", "Test addNewTask description", localDateTime, 40);
         final int taskId = task.getTaskId();
         taskManager.addTask(task);
 
@@ -55,7 +58,7 @@ class TaskTest {
     @Test // Проверяем добавление подзадачи в эпик
     public void shouldBePositiveWhenSubtaskAddedToEpic() {
         Epic epic = new Epic("Test addNewTask", "Test addNewTask description");
-        Task subtask = new Subtask(epic, "newSubtask", "description");
+        Task subtask = new Subtask(epic, "newSubtask", "description", localDateTime, 290);
         taskManager.addTask(epic);
         taskManager.addTask(subtask);
         assertNotNull(taskManager.getAllSubtasksById(epic.getTaskId()), "Подзадач нет.");

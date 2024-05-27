@@ -1,0 +1,8 @@
+id,type,name,status,description,epic,startTime, duration, endTime
+1, TASK, task1, NEW, description1, 26.05.2024 12:25, 180, 26.05.2024 15:25
+2, EPIC, epic1, NEW, desc1, 23.05.2024 12:25, 210, 30.05.2024 13:25
+3, SUBTASK, subtask1, NEW, descr, 2, 30.05.2024 12:25, 60, 30.05.2024 13:25
+4, SUBTASK, subtask2, NEW, descr, 2, 26.05.2024 15:25, 30, 26.05.2024 15:55
+5, SUBTASK, subtask3, NEW, descr, 2, 27.05.2024 12:25, 60, 27.05.2024 13:25
+6, SUBTASK, subtask4, NEW, descr, 2, 23.05.2024 12:25, 60, 23.05.2024 13:25
+7, TASK, newTask, NEW, descr, 26.05.2024 16:25, 20, 26.05.2024 16:45

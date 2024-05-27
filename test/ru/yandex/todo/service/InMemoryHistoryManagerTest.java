@@ -7,19 +7,24 @@ import ru.yandex.todo.model.Epic;
 import ru.yandex.todo.model.Subtask;
 import ru.yandex.todo.model.Task;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class InMemoryHistoryManagerTest {
 
     InMemoryTaskManager taskManager;
     static final int historySize = 10; // Размер истории для тестов
+    private LocalDateTime localDateTime;
 
     @BeforeEach
     public void beforeEach() {
         taskManager = Managers.getDefault();
+        localDateTime = LocalDateTime.now();
         // Наполняем задачами
         for (int i = 0; i < historySize; i++) {
-            taskManager.addTask(new Task("Task " + 1, "Description " + 1));
+            taskManager
+                    .addTask(new Task("Task " + 1, "Description " + 1
+                            , localDateTime.plusDays(i), i + 10));
             taskManager.getTaskById(i + 1); // Добавляем историю просмотров
         }
     }
@@ -60,7 +65,7 @@ public class InMemoryHistoryManagerTest {
     public void shouldBePositiveWhenDeletingEpicFromTasks() {
         Epic epic = new Epic("epic", "description of epic");
         taskManager.addTask(epic);
-        Subtask subtask = new Subtask(epic, "subtask", "description of subtask");
+        Subtask subtask = new Subtask(epic, "subtask", "description of subtask", localDateTime.minusDays(2), 30);
         taskManager.addTask(subtask);
         taskManager.getTaskById(subtask.getTaskId());
         int sizeBefore = taskManager.getHistory().size();
@@ -79,7 +84,7 @@ public class InMemoryHistoryManagerTest {
     public void shouldBePositiveWhenSubtaskDeleted() {
         Epic epic = new Epic("epic", "description of epic");
         taskManager.addTask(epic);
-        Subtask subtask = new Subtask(epic, "subtask", "description of subtask");
+        Subtask subtask = new Subtask(epic, "subtask", "description of subtask", localDateTime.minusDays(1), 50);
         taskManager.addTask(subtask);
         taskManager.getTaskById(subtask.getTaskId());
         Assertions.assertEquals(taskManager.getHistory().size(), historySize + 1, "Субтаск не в истории");
@@ -90,7 +95,7 @@ public class InMemoryHistoryManagerTest {
 
     @Test // Проверяем, что задачи попадают в конец истории и выводятся с конца
     public void shouldBePositiveWhenAddedTaskInTheEndOfHistoryAndReturnedReversedArray() {
-        Task task = new Task("task", "description");
+        Task task = new Task("task", "description", localDateTime.minusDays(1), 80);
         Task lastTaskInHistory = taskManager.getHistory().getFirst();
         Assertions.assertEquals(historySize, lastTaskInHistory.getTaskId());
         taskManager.addTask(task);
