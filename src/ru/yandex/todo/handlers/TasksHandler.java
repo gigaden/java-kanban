@@ -3,6 +3,7 @@ package ru.yandex.todo.handlers;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import ru.yandex.todo.exceptions.DurationAdapterException;
 import ru.yandex.todo.exceptions.ManagerAddTaskException;
 import ru.yandex.todo.exceptions.ManagerCrossTimeException;
 import ru.yandex.todo.model.Task;
@@ -10,7 +11,6 @@ import ru.yandex.todo.service.TaskManager;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import static ru.yandex.todo.server.HttpTaskServer.taskPath;
 
@@ -29,10 +29,10 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
 
             switch (method) {
                 case "GET": {
-                    if (Pattern.matches("^" + taskPath + "$", path)) {
+                    if (isValidPath("^" + taskPath + "$", path)) {
                         String stringResponse = gson.toJson(manager.getAllTasks());
                         writeResponse(exchange, stringResponse, 200);
-                    } else if (Pattern.matches("^" + taskPath + "/\\d+$", path)) {
+                    } else if (isValidPath("^" + taskPath + "/\\d+$", path)) {
                         int id = parsePathId(path.replaceFirst(taskPath + "/", ""));
                         if (id != -1 && manager.hasTask(id)) {
                             String stringResponse = gson.toJson(manager.getTaskById(id));
@@ -47,7 +47,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                     break;
                 }
                 case "POST": {
-                    if (Pattern.matches("^" + taskPath + "?$", path)) {
+                    if (isValidPath("^" + taskPath + "?$", path)) {
                         String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
                         try {
                             Optional<Task> taskOptional = Optional.of(gson.fromJson(body, Task.class));
@@ -68,7 +68,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                             writeResponse(exchange, "Internal Server Error: " + e.getMessage(), 500);
                         }
 
-                    } else if (Pattern.matches("^" + taskPath + "\\d+$", path)) {
+                    } else if (isValidPath("^" + taskPath + "\\d+$", path)) {
                         int id = parsePathId(path.replaceFirst(taskPath + "/", ""));
                         if (id != -1 && manager.hasTask(id)) {
                             String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
@@ -96,7 +96,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                     break;
                 }
                 case "DELETE": {
-                    if (Pattern.matches("^" + taskPath + "/\\d+$", path)) {
+                    if (isValidPath("^" + taskPath + "/\\d+$", path)) {
                         int id = parsePathId(path.replaceFirst(taskPath + "/", ""));
                         if (id != -1 && manager.hasTask(id)) {
                             manager.delTaskById(id);
@@ -115,6 +115,8 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                     writeResponse(exchange, "Данный метод не поддерживается: " + method, 405);
                 }
             }
+        } catch (DurationAdapterException e) {
+            writeResponse(exchange, e.getMessage(), 406);
         } catch (Exception e) {
             writeResponse(exchange, "Internal Server Error: " + e.getMessage(), 500);
         }

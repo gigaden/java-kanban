@@ -4,6 +4,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import ru.yandex.todo.exceptions.DurationAdapterException;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -27,6 +28,10 @@ public class DurationAdapter extends TypeAdapter<Duration> {
             jsonReader.nextNull();
             return null;
         }
-        return Duration.ofMinutes(Integer.parseInt(jsonReader.nextString()));
+        try {
+            return Duration.ofMinutes(Integer.parseInt(jsonReader.nextString()));
+        } catch (NumberFormatException e) {
+            throw new DurationAdapterException("Задана неверная продолжительность задачи");
+        }
     }
 }

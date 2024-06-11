@@ -2,10 +2,10 @@ package ru.yandex.todo.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import ru.yandex.todo.exceptions.DurationAdapterException;
 import ru.yandex.todo.service.TaskManager;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import static ru.yandex.todo.server.HttpTaskServer.historyPath;
 
@@ -25,7 +25,7 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
 
             switch (method) {
                 case "GET": {
-                    if (Pattern.matches("^" + historyPath + "$", path)) {
+                    if (isValidPath("^" + historyPath + "$", path)) {
                         String stringResponse = gson.toJson(manager.getHistory());
                         writeResponse(exchange, stringResponse, 200);
                     } else {
@@ -38,6 +38,8 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
                     writeResponse(exchange, "Метод не поддерживается: " + method, 405);
                 }
             }
+        } catch (DurationAdapterException e) {
+            writeResponse(exchange, e.getMessage(), 406);
         } catch (Exception e) {
             writeResponse(exchange, "Internal Server Error: " + e.getMessage(), 500);
         }

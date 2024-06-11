@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import ru.yandex.todo.exceptions.DurationAdapterException;
 import ru.yandex.todo.exceptions.ManagerAddTaskException;
 import ru.yandex.todo.exceptions.ManagerCrossTimeException;
 import ru.yandex.todo.model.Epic;
@@ -13,7 +14,6 @@ import ru.yandex.todo.service.TaskManager;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import static ru.yandex.todo.server.HttpTaskServer.epicPath;
 
@@ -32,10 +32,10 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
 
             switch (method) {
                 case "GET": {
-                    if (Pattern.matches("^" + epicPath + "$", path)) {
+                    if (isValidPath("^" + epicPath + "$", path)) {
                         String stringResponse = gson.toJson(manager.getAllEpics());
                         writeResponse(exchange, stringResponse, 200);
-                    } else if (Pattern.matches("^" + epicPath + "/\\d+$", path)) {
+                    } else if (isValidPath("^" + epicPath + "/\\d+$", path)) {
                         int id = parsePathId(path.replaceFirst(epicPath + "/", ""));
                         if (id != -1 && manager.hasTask(id)) {
                             String stringResponse = gson.toJson(manager.getTaskById(id));
@@ -43,7 +43,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                         } else {
                             writeResponse(exchange, "Неверный id: " + id + " " + method, 404);
                         }
-                    } else if (Pattern.matches("^" + epicPath + "/\\d+/subtasks$", path)) {
+                    } else if (isValidPath("^" + epicPath + "/\\d+/subtasks$", path)) {
                         int id = parsePathId(path.replaceFirst(epicPath + "/", "")
                                 .replaceFirst("/subtasks", ""));
                         if (id != -1 && manager.hasTask(id)) {
@@ -59,7 +59,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                     break;
                 }
                 case "POST": {
-                    if (Pattern.matches("^" + epicPath + "$", path)) {
+                    if (isValidPath("^" + epicPath + "$", path)) {
                         String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
                         Optional<Epic> epicOptional = null;
                         try {
@@ -76,6 +76,8 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                             writeResponse(exchange, e.getMessage(), 406);
                         } catch (JsonSyntaxException e) {
                             writeResponse(exchange, "Неверный формат Json", 406);
+                        } catch (DurationAdapterException e) {
+                            writeResponse(exchange, e.getMessage(), 406);
                         } catch (Exception e) {
                             writeResponse(exchange, "Internal Server Error: " + e.getMessage(), 500);
                         }
@@ -87,7 +89,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                     break;
                 }
                 case "DELETE": {
-                    if (Pattern.matches("^" + epicPath + "/\\d+$", path)) {
+                    if (isValidPath("^" + epicPath + "/\\d+$", path)) {
                         int id = parsePathId(path.replaceFirst(epicPath + "/", ""));
                         if (id != -1 && manager.hasTask(id)) {
                             manager.delTaskById(id);

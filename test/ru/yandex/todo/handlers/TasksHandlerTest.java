@@ -63,6 +63,7 @@ public class TasksHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
         Assertions.assertEquals(201, response.statusCode());
+        Assertions.assertNotNull(response.body(), "Получено пустое тело");
 
         // проверяем, что создалась одна задача с корректным именем
         List<Task> tasksFromManager = manager.getAllTasks();
@@ -91,6 +92,7 @@ public class TasksHandlerTest {
         HttpResponse<String> responseOne = client.send(requestOne, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
         Assertions.assertEquals(200, responseOne.statusCode());
+        Assertions.assertNotNull(responseOne.body(), "Получено пустое тело");
 
         Type type = new TypeToken<List<Task>>() {}.getType();
         List<Task> tasks = gson.fromJson(responseOne.body(), type);
@@ -105,6 +107,7 @@ public class TasksHandlerTest {
         HttpRequest requestTwo = HttpRequest.newBuilder().uri(url2).GET().build();
         HttpResponse<String> responseTwo = client.send(requestTwo, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(200, responseTwo.statusCode());
+        Assertions.assertNotNull(responseTwo.body(), "Получено пустое тело");
         Task taskTwo = gson.fromJson(responseTwo.body(), Task.class);
         Assertions.assertEquals(taskTwo.getDescription(), "Testing task 2", "Описание задач не совпадает");
         client.close();
@@ -124,6 +127,7 @@ public class TasksHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertNotNull(response.body(), "Получено пустое тело");
         Assertions.assertEquals(0, manager.getAllTasks().size(), "Задача не удалилась");
         client.close();
     }

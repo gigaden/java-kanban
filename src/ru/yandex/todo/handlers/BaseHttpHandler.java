@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 public class BaseHttpHandler {
     // Класс с повторяющимися методами для хэндлеров
@@ -40,5 +41,10 @@ public class BaseHttpHandler {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+
+    // Проверяем путь
+    protected boolean isValidPath(String pattern, String path) {
+        return Pattern.matches(pattern, path);
     }
 }

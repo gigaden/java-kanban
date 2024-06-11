@@ -66,6 +66,7 @@ public class SubtasksHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
         Assertions.assertEquals(201, response.statusCode());
+        Assertions.assertNotNull(response.body(), "Получено пустое тело");
 
         // проверяем, что создалась одна задача с корректным именем
         List<Subtask> tasksFromManager = manager.getAllSubtasks();
@@ -96,6 +97,7 @@ public class SubtasksHandlerTest {
         HttpResponse<String> responseOne = client.send(requestOne, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
         Assertions.assertEquals(200, responseOne.statusCode());
+        Assertions.assertNotNull(responseOne.body(), "Получено пустое тело");
 
 
         // проверяем, что создалась одна задача с корректным именем
@@ -113,6 +115,7 @@ public class SubtasksHandlerTest {
         HttpRequest requestTwo = HttpRequest.newBuilder().uri(url2).GET().build();
         HttpResponse<String> responseTwo = client.send(requestTwo, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(200, responseTwo.statusCode());
+        Assertions.assertNotNull(responseTwo.body(), "Получено пустое тело");
         Subtask taskTwo = gson.fromJson(responseTwo.body(), Subtask.class);
         Assertions.assertEquals(taskTwo.getDescription(), "Testing task 2", "Описание задач не совпадает");
         client.close();
@@ -134,6 +137,7 @@ public class SubtasksHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertNotNull(response.body(), "Получено пустое тело");
         Assertions.assertEquals(1, manager.getAllTasks().size(), "Задача не удалилась");
         client.close();
     }

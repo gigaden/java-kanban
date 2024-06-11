@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import ru.yandex.todo.exceptions.DurationAdapterException;
 import ru.yandex.todo.exceptions.ManagerAddTaskException;
 import ru.yandex.todo.exceptions.ManagerCrossTimeException;
 import ru.yandex.todo.model.Epic;
@@ -13,7 +14,6 @@ import ru.yandex.todo.service.TaskManager;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import static ru.yandex.todo.server.HttpTaskServer.subtaskPath;
 
@@ -33,10 +33,10 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
 
             switch (method) {
                 case "GET": {
-                    if (Pattern.matches("^" + subtaskPath + "$", path)) {
+                    if (isValidPath("^" + subtaskPath + "$", path)) {
                         String stringResponse = gson.toJson(manager.getAllSubtasks());
                         writeResponse(exchange, stringResponse, 200);
-                    } else if (Pattern.matches("^" + subtaskPath + "/\\d+$", path)) {
+                    } else if (isValidPath("^" + subtaskPath + "/\\d+$", path)) {
                         int id = parsePathId(path.replaceFirst(subtaskPath + "/", ""));
                         if (id != -1 && manager.hasTask(id)) {
                             String stringResponse = gson.toJson(manager.getTaskById(id));
@@ -51,7 +51,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
                     break;
                 }
                 case "POST": {
-                    if (Pattern.matches("^" + subtaskPath + "$", path)) {
+                    if (isValidPath("^" + subtaskPath + "$", path)) {
                         String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
                         try {
                             Optional<Subtask> subtaskOptional = Optional.of(gson.fromJson(body, Subtask.class));
@@ -74,7 +74,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
                             writeResponse(exchange, "Internal Server Error: " + e.getMessage(), 500);
                         }
 
-                    } else if (Pattern.matches("^" + subtaskPath + "\\d+$", path)) {
+                    } else if (isValidPath("^" + subtaskPath + "\\d+$", path)) {
                         int id = parsePathId(path.replaceFirst(subtaskPath + "/", ""));
                         if (id != -1 && manager.hasTask(id)) {
                             String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
@@ -105,7 +105,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
                     break;
                 }
                 case "DELETE": {
-                    if (Pattern.matches("^" + subtaskPath + "/\\d+$", path)) {
+                    if (isValidPath("^" + subtaskPath + "/\\d+$", path)) {
                         int id = parsePathId(path.replaceFirst(subtaskPath + "/", ""));
                         if (id != -1 && manager.hasTask(id)) {
                             manager.delTaskById(id);
@@ -124,6 +124,8 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
                     writeResponse(exchange, "Метод не поддерживается: " + method, 405);
                 }
             }
+        } catch (DurationAdapterException e) {
+            writeResponse(exchange, e.getMessage(), 406);
         } catch (Exception e) {
             writeResponse(exchange, "Internal Server Error: " + e.getMessage(), 500);
         }

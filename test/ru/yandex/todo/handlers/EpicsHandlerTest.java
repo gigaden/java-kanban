@@ -64,6 +64,7 @@ public class EpicsHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
         Assertions.assertEquals(201, response.statusCode());
+        Assertions.assertNotNull(response.body(), "Получено пустое тело");
 
         // проверяем, что создалась одна задача с корректным именем
         List<Epic> tasksFromManager = manager.getAllEpics();
@@ -90,6 +91,7 @@ public class EpicsHandlerTest {
         HttpResponse<String> responseOne = client.send(requestOne, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
         Assertions.assertEquals(200, responseOne.statusCode());
+        Assertions.assertNotNull(responseOne.body(), "Получено пустое тело");
 
 
         // проверяем, что создалась одна задача с корректным именем
@@ -107,6 +109,7 @@ public class EpicsHandlerTest {
         HttpRequest requestTwo = HttpRequest.newBuilder().uri(url2).GET().build();
         HttpResponse<String> responseTwo = client.send(requestTwo, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(200, responseTwo.statusCode());
+        Assertions.assertNotNull(responseTwo.body(), "Получено пустое тело");
         Task taskTwo = gson.fromJson(responseTwo.body(), Epic.class);
         Assertions.assertEquals(taskTwo.getDescription(), "Testing task 2", "Описание задач не совпадает");
         client.close();
@@ -125,6 +128,7 @@ public class EpicsHandlerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertNotNull(response.body(), "Получено пустое тело");
         Assertions.assertEquals(0, manager.getAllEpics().size(), "Задача не удалилась");
         client.close();
     }
@@ -144,6 +148,7 @@ public class EpicsHandlerTest {
         List<Subtask> subtasks = gson.fromJson(response.body(), type);
 
         Assertions.assertEquals(1, subtasks.size(), "Неверное количество подзадач вернулось");
+        client.close();
     }
 
 }

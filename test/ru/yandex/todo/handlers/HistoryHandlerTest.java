@@ -59,6 +59,7 @@ public class HistoryHandlerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(200, response.statusCode(), "Неверный код ответа сервера");
+        Assertions.assertNotNull(response.body(), "Получено пустое тело");
 
         Assertions.assertEquals(1, manager.getHistory().size(), "История пуста.");
         client.close();
@@ -79,6 +80,7 @@ public class HistoryHandlerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(200, response.statusCode(), "Неверный код ответа сервера");
+        Assertions.assertNotNull(response.body(), "Получено пустое тело");
 
         Type type = new TypeToken<List<Task>>() {
         }.getType();

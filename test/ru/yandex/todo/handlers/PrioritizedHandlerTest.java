@@ -61,6 +61,7 @@ public class PrioritizedHandlerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(200, response.statusCode(), "Неверный код ответа сервера");
+        Assertions.assertNotNull(response.body(), "Получено пустое тело");
 
         Type type = new TypeToken<List<Task>>() {
         }.getType();
