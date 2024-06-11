@@ -124,7 +124,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     // Проверяем наличие обязательных полей при добавлении задачи
     private void checkTaskFields(Task task) {
         if (task.getName() == null || task.getDescription() == null || task.getStartTime() == null
-                || task.getDuration() == 0 ) {
+                || task.getDuration() == 0) {
             throw new ManagerAddTaskException("Не все обязательные поля переданы");
         }
     }
