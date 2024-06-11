@@ -8,6 +8,7 @@ import ru.yandex.todo.service.TaskStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Console {
@@ -34,7 +35,7 @@ public class Console {
 
 
     // Выводим задачи на печать
-    public static void printTasks(ArrayList<Task> tasks) {
+    public static void printTasks(List<Task> tasks) {
         if (tasks.isEmpty()) {
             System.out.println("Не создано ни одной задачи\n");
         } else {

@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 public class Subtask extends Task {
     // Класс для описания подзадач
 
-    private final Epic epic;
+    private final transient Epic epic;
+    private final int epicId;
 
     public Subtask(Epic epic) {
         this.epic = epic;
+        this.epicId = epic.getTaskId();
     }
 
     public Subtask(Epic epic, String name, String description, LocalDateTime startTime, int duration) {
@@ -25,6 +27,7 @@ public class Subtask extends Task {
         InMemoryTaskManager.setTaskId();
         this.startTime = startTime;
         this.duration = Duration.ofMinutes(duration);
+        this.epicId = epic.getTaskId();
     }
 
     // Конструктор для глубокого копирования
@@ -34,11 +37,16 @@ public class Subtask extends Task {
         this.description = another.description;
         this.taskStatus = another.taskStatus;
         this.epic = ((Subtask) another).epic;
+        this.epicId = another.epic.getTaskId();
 
     }
 
     public Epic getEpic() {
         return epic;
+    }
+
+    public int getEpicId() {
+        return epicId;
     }
 
     @Override
@@ -47,8 +55,6 @@ public class Subtask extends Task {
         // если все подзадачи DONE, то меняем статус эпика на DONE
         this.taskStatus = taskStatus;
         epic.checkSubtasksStatusDone();
-
-
     }
 
 

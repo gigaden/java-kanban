@@ -11,7 +11,7 @@ public interface TaskManager {
 
 
     // Получаем список всех задач
-    ArrayList<Task> getAllTasks();
+    List<Task> getAllTasks();
 
     // Получаем все эпики
     List<Epic> getAllEpics();
@@ -47,7 +47,7 @@ public interface TaskManager {
     Subtask getSubtaskById(int taskId, int subtaskId);
 
     // Получаем все подзадачи эпика по id
-    ArrayList<Subtask> getAllSubtasksById(int id);
+    List<Subtask> getAllSubtasksById(int id);
 
     // Меняем статус задачи
     void setTaskStatus(int id, TaskStatus taskStatus);
@@ -60,4 +60,7 @@ public interface TaskManager {
 
     // Проверяем есть ли таска в менеджере
     boolean hasTask(int id);
+
+    // Получаем задача по приоритету
+    public List<Task> getPrioritizedTasks();
 }
