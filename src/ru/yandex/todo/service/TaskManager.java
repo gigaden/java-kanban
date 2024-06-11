@@ -4,7 +4,6 @@ import ru.yandex.todo.model.Epic;
 import ru.yandex.todo.model.Subtask;
 import ru.yandex.todo.model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
