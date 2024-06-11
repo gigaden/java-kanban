@@ -7,7 +7,6 @@ import ru.yandex.todo.service.TaskManager;
 import ru.yandex.todo.service.TaskStatus;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
