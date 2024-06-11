@@ -1,6 +1,5 @@
 package ru.yandex.todo.server;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
 import ru.yandex.todo.handlers.*;
 import ru.yandex.todo.service.Managers;
@@ -12,9 +11,9 @@ import java.net.InetSocketAddress;
 public class HttpTaskServer {
     // Класс для управления сервером и эндпоинтами
     protected static int PORT = 8080;
-    final static int BACKLOG = 0;
-    private HttpServer server;
-    private TaskManager manager;
+    static final int BACKLOG = 0;
+    private final HttpServer server;
+    private final TaskManager manager;
     // Прописываем пути для api
     public static final String mainPath = "http://localhost:";
     public static final String subtaskPath = "/api/v1/subtasks";
