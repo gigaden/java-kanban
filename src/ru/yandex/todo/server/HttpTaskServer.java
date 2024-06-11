@@ -9,15 +9,11 @@ import ru.yandex.todo.service.TaskManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import static ru.yandex.todo.filltasks.CreateEpicsSubtasks.createEpics;
-import static ru.yandex.todo.filltasks.CreateTasks.createTasks;
-
 public class HttpTaskServer {
     // Класс для управления сервером и эндпоинтами
     protected static int PORT = 8080;
     final static int BACKLOG = 0;
     private HttpServer server;
-    private Gson gson;
     private TaskManager manager;
     // Прописываем пути для api
     public static final String mainPath = "http://localhost:";
