@@ -3,7 +3,7 @@ package ru.yandex.todo.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.todo.exceptions.ManagerAddException;
+import ru.yandex.todo.exceptions.ManagerCrossTimeException;
 import ru.yandex.todo.exceptions.ManagerSaveException;
 import ru.yandex.todo.model.Epic;
 import ru.yandex.todo.model.Subtask;
@@ -75,7 +75,7 @@ public class FileBackedTaskManagerTest {
     // Проверяем выброс исключения при добавлении задачи, пересекающейся с другими
     @Test
     public void shouldBePositiveWhenAddedCrossingTask() {
-        Assertions.assertThrows(ManagerAddException.class, () -> {
+        Assertions.assertThrows(ManagerCrossTimeException.class, () -> {
             fileBackedTaskManager
                     .addTask(new Task("task50", "descr", localDateTime.plusMonths(1), 60));
             fileBackedTaskManager

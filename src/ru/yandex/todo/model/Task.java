@@ -33,7 +33,7 @@ public class Task {
         taskStatus = TaskStatus.NEW;
         taskId = InMemoryTaskManager.getTaskId();
         InMemoryTaskManager.setTaskId();
-        subtasks = null;
+        subtasks = new HashMap<>();
         this.startTime = startTime;
         this.duration = Duration.ofMinutes(duration);
 
@@ -99,6 +99,10 @@ public class Task {
 
     public void setDuration(int duration) {
         this.duration = Duration.ofMinutes(duration);
+    }
+
+    public int getDuration() {
+        return (int) this.duration.toMinutes();
     }
 
     // Рассчитываем дату и время завершения задачи

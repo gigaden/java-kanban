@@ -1,6 +1,6 @@
 package ru.yandex.todo.service;
 
-import ru.yandex.todo.exceptions.ManagerAddException;
+import ru.yandex.todo.exceptions.ManagerCrossTimeException;
 import ru.yandex.todo.model.Epic;
 import ru.yandex.todo.model.Subtask;
 import ru.yandex.todo.model.Task;
@@ -42,8 +42,9 @@ public class InMemoryTaskManager implements TaskManager {
      * ссылки же и, меняя их, они меняются в главной мапе, тест тогда один не проходит.
      * Может я не понял чего просто? */
     @Override
-    public ArrayList<Task> getAllTasks() {
-        return new ArrayList<>(List.copyOf(tasks.values()));
+    public List<Task> getAllTasks() {
+        //return new ArrayList<>(List.copyOf(tasks.values()));
+        return List.copyOf(tasks.values());
     }
 
     // Получаем все эпики
@@ -93,13 +94,17 @@ public class InMemoryTaskManager implements TaskManager {
         // Проверяем пересекается ли новая задача с какими-либо другими существующими задачами
         if (task.getClass() != Epic.class && task.getStartTime() != null
                 && tasksTreeSet.stream().anyMatch(t -> taskIsCrossing(task, t))) {
-            throw new ManagerAddException("Время задачи пересекается с уже созданными задачами.");
+            throw new ManagerCrossTimeException("Время задачи пересекается с уже созданными задачами.");
         }
         // Если прилетает подзадача, то добавляем её в мапу эпика, проверив существует ли в мапе сам эпик
         if (task.getClass() == Subtask.class) {
             Epic epic = ((Subtask) task).getEpic();
             if (hasTask(epic.getTaskId())) {
                 epic.addSubtask((Subtask) task);
+                // Пересчитываем и записываем начало, окончание и продолжительность эпика
+                epic.setStartTime(epic.getStartTime());
+                epic.setEndTime(epic.getEndTime());
+                epic.setDuration(epic.getDuration());
             }
         }
         tasks.put(task.getTaskId(), task);
